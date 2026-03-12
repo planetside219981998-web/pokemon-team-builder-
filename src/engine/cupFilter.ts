@@ -43,7 +43,7 @@ export function filterByCup(allPokemon: Pokemon[], cup: CupDefinition): Pokemon[
 export function filterByCP(allPokemon: Pokemon[], cpLimit: number): Pokemon[] {
   if (cpLimit >= 10000) return allPokemon; // Master League = no limit
 
-  return allPokemon.filter((p) => {
+  return allPokemon.filter((_p) => {
     // If we have level25CP data, use it as a rough check
     // Pokemon that exceed CP limit even at low level are excluded
     // A pokemon is eligible if it can be powered down to at or below the CP limit

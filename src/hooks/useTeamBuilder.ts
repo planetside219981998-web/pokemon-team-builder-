@@ -3,7 +3,7 @@ import { db, getRankings } from '@/data/db';
 import { ensureRankings } from '@/data/sync';
 import { getRecommendations } from '@/engine';
 import { useAppStore } from '@/store/appStore';
-import type { Pokemon, Move, RankedPokemon, CupDefinition, Recommendation } from '@/data/types';
+import type { Move, RankedPokemon, CupDefinition, Recommendation } from '@/data/types';
 
 export function useTeamBuilder() {
   const team = useAppStore((s) => s.team);

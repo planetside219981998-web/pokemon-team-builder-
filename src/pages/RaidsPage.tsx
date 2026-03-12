@@ -8,7 +8,7 @@ import { getMoveName } from '@/i18n/moveNames';
 import { PokemonSearch } from '@/components/search/PokemonSearch';
 import { TypeBadge } from '@/components/shared/TypeBadge';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
-import type { Pokemon, PokemonType } from '@/data/types';
+import type { Pokemon } from '@/data/types';
 
 const WEATHER_OPTIONS = [
   'noWeather', 'sunny', 'rainy', 'partlyCloudy', 'cloudy', 'windy', 'snow', 'fog',

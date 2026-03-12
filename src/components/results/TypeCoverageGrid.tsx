@@ -4,7 +4,7 @@ import { useAppStore } from '@/store/appStore';
 import { db } from '@/data/db';
 import { analyzeTeamCoverage } from '@/engine';
 import { ALL_TYPES } from '@/data/types';
-import type { PokemonType, Move } from '@/data/types';
+import type { Move } from '@/data/types';
 import { SUPER_EFFECTIVE } from '@/data/constants';
 
 const TYPE_COLORS: Record<string, string> = {

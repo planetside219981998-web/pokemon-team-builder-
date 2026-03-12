@@ -1,4 +1,4 @@
-import type { Pokemon, Move, RankedPokemon, CoverageAnalysis, Recommendation, CupDefinition } from '@/data/types';
+import type { Pokemon, Move, RankedPokemon, Recommendation, CupDefinition } from '@/data/types';
 import { SCORE_WEIGHTS } from '@/data/constants';
 import { analyzeTeamCoverage, scoreCoverage } from './typeCoverage';
 import { scoreSynergy } from './synergyAnalyzer';

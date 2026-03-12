@@ -1,5 +1,5 @@
 import type { Pokemon, RankedPokemon, CoverageAnalysis, PokemonType, Move } from '@/data/types';
-import { getWeaknesses, getResistances } from './typeChart';
+import { getResistances } from './typeChart';
 import { SUPER_EFFECTIVE } from '@/data/constants';
 import { getEffectivenessVsDualType } from './typeChart';
 
