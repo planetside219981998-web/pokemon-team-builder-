@@ -24,7 +24,13 @@
     "slot": "Slot {{n}}",
     "cpLabel": "WP",
     "cpPlaceholder": "WP (optional)",
-    "cpExceeded": "Ueberschreitet {{limit}} WP-Limit!"
+    "cpExceeded": "Ueberschreitet {{limit}} WP-Limit!",
+    "save": "Speichern",
+    "load": "Laden",
+    "share": "Teilen",
+    "copied": "Kopiert!",
+    "savedTeams": "Gespeicherte Teams",
+    "teamName": "Teamname..."
   },
   "search": {
     "placeholder": "Pokemon suchen (DE/EN)...",
@@ -92,7 +98,9 @@
     "dpsTimesTodo": "DPS x TDO",
     "estimator": "Estimator",
     "results": "{{count}} Counter gefunden",
-    "noCounters": "Waehle einen Raid-Boss um Counter zu sehen"
+    "noCounters": "Waehle einen Raid-Boss um Counter zu sehen",
+    "weakTo": "Schwach gegen",
+    "resistsLabel": "Resistent gegen"
   },
   "settings": {
     "title": "Einstellungen",

@@ -13,7 +13,7 @@ export function StatBar({ label, value, maxValue = 100, color = 'bg-red-500' }: 
       <span className="w-24 text-xs text-slate-400 shrink-0">{label}</span>
       <div className="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
         <div
-          className={`h-full ${color} rounded-full transition-all duration-300`}
+          className={`h-full ${color} rounded-full animate-barGrow`}
           style={{ width: `${pct}%` }}
         />
       </div>

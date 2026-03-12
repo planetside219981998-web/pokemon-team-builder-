@@ -20,8 +20,15 @@ export function RecommendationList({ recommendations, loading, error }: Recommen
 
   if (!hasTeamMembers) {
     return (
-      <div className="text-center py-8 text-slate-400">
-        <p>{t('recommendations.empty')}</p>
+      <div className="text-center py-12">
+        <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center">
+          <svg className="w-8 h-8 text-slate-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M2 12h20" />
+            <circle cx="12" cy="12" r="4" />
+          </svg>
+        </div>
+        <p className="text-slate-400 text-sm">{t('recommendations.empty')}</p>
       </div>
     );
   }

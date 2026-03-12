@@ -25,6 +25,19 @@ export default {
         steel: '#B7B7CE',
         fairy: '#D685AD',
       },
+      keyframes: {
+        slideUp: {
+          from: { opacity: '0', transform: 'translateY(16px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
+        },
+        barGrow: {
+          from: { width: '0%' },
+        },
+      },
+      animation: {
+        slideUp: 'slideUp 0.4s ease-out',
+        barGrow: 'barGrow 0.6s ease-out',
+      },
     },
   },
   plugins: [],

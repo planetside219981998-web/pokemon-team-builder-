@@ -24,7 +24,13 @@
     "slot": "Slot {{n}}",
     "cpLabel": "CP",
     "cpPlaceholder": "CP (optional)",
-    "cpExceeded": "Exceeds {{limit}} CP limit!"
+    "cpExceeded": "Exceeds {{limit}} CP limit!",
+    "save": "Save",
+    "load": "Load",
+    "share": "Share",
+    "copied": "Copied!",
+    "savedTeams": "Saved Teams",
+    "teamName": "Team name..."
   },
   "search": {
     "placeholder": "Search Pokemon (EN/DE)...",
@@ -92,7 +98,9 @@
     "dpsTimesTodo": "DPS x TDO",
     "estimator": "Estimator",
     "results": "{{count}} counters found",
-    "noCounters": "Select a raid boss to see counters"
+    "noCounters": "Select a raid boss to see counters",
+    "weakTo": "Weak to",
+    "resistsLabel": "Resists"
   },
   "settings": {
     "title": "Settings",

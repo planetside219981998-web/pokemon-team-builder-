@@ -6,19 +6,9 @@ import { getMoveName } from '@/i18n/moveNames';
 import { useMoveMap } from '@/hooks/useMoveMap';
 import { TypeBadge } from '@/components/shared/TypeBadge';
 import { StatBar } from '@/components/shared/StatBar';
+import { spriteUrl } from '@/utils/sprites';
+import { TYPE_BG, TYPE_HEX } from '@/data/typeColors';
 import type { Recommendation, PokemonType } from '@/data/types';
-
-const TYPE_BG: Record<string, string> = {
-  normal: 'bg-[#A8A77A]/20 border-[#A8A77A]/40', fire: 'bg-[#EE8130]/20 border-[#EE8130]/40',
-  water: 'bg-[#6390F0]/20 border-[#6390F0]/40', electric: 'bg-[#F7D02C]/20 border-[#F7D02C]/40',
-  grass: 'bg-[#7AC74C]/20 border-[#7AC74C]/40', ice: 'bg-[#96D9D6]/20 border-[#96D9D6]/40',
-  fighting: 'bg-[#C22E28]/20 border-[#C22E28]/40', poison: 'bg-[#A33EA1]/20 border-[#A33EA1]/40',
-  ground: 'bg-[#E2BF65]/20 border-[#E2BF65]/40', flying: 'bg-[#A98FF3]/20 border-[#A98FF3]/40',
-  psychic: 'bg-[#F95587]/20 border-[#F95587]/40', bug: 'bg-[#A6B91A]/20 border-[#A6B91A]/40',
-  rock: 'bg-[#B6A136]/20 border-[#B6A136]/40', ghost: 'bg-[#735797]/20 border-[#735797]/40',
-  dragon: 'bg-[#6F35FC]/20 border-[#6F35FC]/40', dark: 'bg-[#705746]/20 border-[#705746]/40',
-  steel: 'bg-[#B7B7CE]/20 border-[#B7B7CE]/40', fairy: 'bg-[#D685AD]/20 border-[#D685AD]/40',
-};
 
 function MoveBadge({ moveId, locale, moveMap }: {
   moveId: string;
@@ -36,6 +26,14 @@ function MoveBadge({ moveId, locale, moveMap }: {
   );
 }
 
+const SCORE_COLORS = [
+  { key: 'metaScore', color: '#a855f7' },
+  { key: 'coverageScore', color: '#3b82f6' },
+  { key: 'synergyScore', color: '#22c55e' },
+  { key: 'bulkScore', color: '#eab308' },
+  { key: 'accessibilityScore', color: '#06b6d4' },
+];
+
 interface PokemonCardProps {
   rec: Recommendation;
   rank: number;
@@ -52,16 +50,35 @@ export function PokemonCard({ rec, rank, onAdd, canAdd }: PokemonCardProps) {
   const name = getPokemonName(rec.pokemon.speciesId, rec.pokemon.speciesName, language);
   const fastMove = rec.recommendedMoveset[0];
   const chargedMoves = rec.recommendedMoveset.slice(1);
+  const primaryType = rec.pokemon.types[0] ?? 'normal';
+  const typeColor = TYPE_HEX[primaryType] ?? '#475569';
 
   return (
-    <div className="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden">
+    <div
+      className="rounded-xl border overflow-hidden bg-gradient-to-br from-slate-800/90 to-slate-900 shadow-lg animate-slideUp"
+      style={{ borderColor: `${typeColor}40` }}
+    >
       {/* Header */}
       <div className="px-4 py-3 flex items-start gap-3">
-        <span className="text-lg font-bold text-slate-500 w-8 shrink-0">#{rank}</span>
+        <div className="relative shrink-0">
+          <img
+            src={spriteUrl(rec.pokemon.dex)}
+            alt={name}
+            className="w-14 h-14 drop-shadow-lg"
+            loading="lazy"
+            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+          />
+          <span
+            className="absolute -top-1 -left-1 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-md"
+            style={{ backgroundColor: typeColor }}
+          >
+            {rank}
+          </span>
+        </div>
+
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             <h3 className="font-bold text-lg truncate">{name}</h3>
-            <span className="text-xs text-slate-400">#{rec.pokemon.dex}</span>
           </div>
           <div className="flex gap-1 mb-2">
             {rec.pokemon.types.map((type) => (
@@ -69,36 +86,24 @@ export function PokemonCard({ rec, rank, onAdd, canAdd }: PokemonCardProps) {
             ))}
           </div>
 
-          {/* Moves with type-colored badges */}
           <div className="mb-2 space-y-1">
             <div className="flex items-center gap-1.5">
               <span className="text-[10px] text-slate-500 w-10 shrink-0">{t('recommendations.fastMove')}</span>
-              {fastMove && (
-                <MoveBadge
-                  moveId={fastMove}
-                  locale={language}
-                  moveMap={moveMap as Map<string, { name: string; type: PokemonType }>}
-                />
-              )}
+              {fastMove && <MoveBadge moveId={fastMove} locale={language} moveMap={moveMap as Map<string, { name: string; type: PokemonType }>} />}
             </div>
             <div className="flex items-center gap-1.5 flex-wrap">
               <span className="text-[10px] text-slate-500 w-10 shrink-0">{t('recommendations.chargedMoves')}</span>
               {chargedMoves.map((m) => (
-                <MoveBadge
-                  key={m}
-                  moveId={m}
-                  locale={language}
-                  moveMap={moveMap as Map<string, { name: string; type: PokemonType }>}
-                />
+                <MoveBadge key={m} moveId={m} locale={language} moveMap={moveMap as Map<string, { name: string; type: PokemonType }>} />
               ))}
             </div>
           </div>
 
           {/* Score */}
           <div className="flex items-center gap-2">
-            <div className="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
+            <div className="flex-1 h-2.5 bg-slate-700 rounded-full overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-red-500 to-orange-400 rounded-full"
+                className="h-full bg-gradient-to-r from-red-500 via-orange-400 to-yellow-400 rounded-full animate-barGrow"
                 style={{ width: `${rec.score}%` }}
               />
             </div>
@@ -106,12 +111,24 @@ export function PokemonCard({ rec, rank, onAdd, canAdd }: PokemonCardProps) {
               {rec.score.toFixed(1)}
             </span>
           </div>
+
+          {/* Mini score breakdown */}
+          <div className="flex gap-1 mt-1.5">
+            {SCORE_COLORS.map(({ key, color }) => {
+              const val = rec.scoreBreakdown[key as keyof typeof rec.scoreBreakdown] as number;
+              return (
+                <div key={key} className="flex-1 h-1 rounded-full bg-slate-700 overflow-hidden" title={key}>
+                  <div className="h-full rounded-full animate-barGrow" style={{ width: `${val}%`, backgroundColor: color }} />
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         {canAdd && (
           <button
             onClick={onAdd}
-            className="shrink-0 px-3 py-1.5 rounded-lg bg-red-500 hover:bg-red-600 text-sm font-medium transition-colors"
+            className="shrink-0 px-3 py-1.5 rounded-lg bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-sm font-medium transition-all shadow-md hover:shadow-lg hover:scale-105"
           >
             +
           </button>
@@ -130,10 +147,10 @@ export function PokemonCard({ rec, rank, onAdd, canAdd }: PokemonCardProps) {
         </ul>
       </div>
 
-      {/* Expandable details */}
+      {/* Expandable */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full px-4 py-2 text-xs text-slate-400 hover:text-slate-200 hover:bg-slate-700/50 transition-colors border-t border-slate-700"
+        className="w-full px-4 py-2 text-xs text-slate-400 hover:text-slate-200 hover:bg-slate-700/50 transition-colors border-t border-slate-700/50"
       >
         {expanded ? '- ' : '+ '}{t('recommendations.scoreBreakdown')}
       </button>
@@ -150,16 +167,28 @@ export function PokemonCard({ rec, rank, onAdd, canAdd }: PokemonCardProps) {
 
           {rec.matchupProbabilities.length > 0 && (
             <div>
-              <h4 className="text-xs font-medium text-slate-400 mb-1">{t('recommendations.matchups')}</h4>
-              <div className="grid grid-cols-2 gap-1">
-                {rec.matchupProbabilities.slice(0, 6).map((m) => (
-                  <div key={m.opponent} className="flex items-center justify-between text-xs px-2 py-1 rounded bg-slate-700/50">
-                    <span className="truncate">{getPokemonName(m.opponent, m.opponentName, language)}</span>
-                    <span className={`font-mono font-medium ${m.winRate >= 0.5 ? 'text-green-400' : 'text-red-400'}`}>
-                      {(m.winRate * 100).toFixed(0)}%
-                    </span>
-                  </div>
-                ))}
+              <h4 className="text-xs font-medium text-slate-400 mb-1.5">{t('recommendations.matchups')}</h4>
+              <div className="grid grid-cols-2 gap-1.5">
+                {rec.matchupProbabilities.slice(0, 6).map((m) => {
+                  const winPct = m.winRate * 100;
+                  return (
+                    <div key={m.opponent} className="flex items-center gap-2 text-xs px-2 py-1.5 rounded-lg bg-slate-700/50">
+                      <span className="truncate flex-1">{getPokemonName(m.opponent, m.opponentName, language)}</span>
+                      <div className="w-12 h-1.5 rounded-full bg-slate-600 overflow-hidden shrink-0">
+                        <div
+                          className="h-full rounded-full"
+                          style={{
+                            width: `${winPct}%`,
+                            backgroundColor: winPct >= 50 ? '#22c55e' : '#ef4444',
+                          }}
+                        />
+                      </div>
+                      <span className={`font-mono font-medium w-8 text-right ${winPct >= 50 ? 'text-green-400' : 'text-red-400'}`}>
+                        {winPct.toFixed(0)}%
+                      </span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}

@@ -1,29 +1,36 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { Pokemon, RankedPokemon, SyncStatus, TeamSlot } from '@/data/types';
+import type { Pokemon, PokemonType, RankedPokemon, SyncStatus, TeamSlot } from '@/data/types';
+
+export interface SavedTeam {
+  name: string;
+  league: string;
+  cp: number;
+  slots: Array<{ speciesId: string; speciesName: string; dex: number; types: PokemonType[]; cp?: number }>;
+  savedAt: number;
+}
 
 interface AppState {
-  // Language
   language: 'en' | 'de';
   setLanguage: (lang: 'en' | 'de') => void;
 
-  // League selection
   selectedLeague: string;
   selectedCp: number;
   setLeague: (league: string, cp: number) => void;
 
-  // Team
   team: (TeamSlot | null)[];
   addToTeam: (pokemon: Pokemon, ranking?: RankedPokemon, cp?: number) => void;
   removeFromTeam: (index: number) => void;
   clearTeam: () => void;
 
-  // Sync status
+  savedTeams: SavedTeam[];
+  saveTeam: (name: string) => void;
+  deleteSavedTeam: (index: number) => void;
+
   syncStatus: SyncStatus;
   syncMessage: string;
   setSyncStatus: (status: SyncStatus, message: string) => void;
 
-  // Active cups (admin toggle)
   activeCups: Set<string>;
   toggleCup: (cupName: string) => void;
   setActiveCups: (cups: string[]) => void;
@@ -60,6 +67,33 @@ export const useAppStore = create<AppState>()(
         }),
       clearTeam: () => set({ team: [null, null, null] }),
 
+      savedTeams: [],
+      saveTeam: (name) =>
+        set((state) => {
+          const filledSlots = state.team
+            .filter((s) => s !== null)
+            .map((s) => ({
+              speciesId: s!.pokemon.speciesId,
+              speciesName: s!.pokemon.speciesName,
+              dex: s!.pokemon.dex,
+              types: s!.pokemon.types,
+              cp: s!.cp,
+            }));
+          if (filledSlots.length === 0) return {};
+          const saved: SavedTeam = {
+            name,
+            league: state.selectedLeague,
+            cp: state.selectedCp,
+            slots: filledSlots,
+            savedAt: Date.now(),
+          };
+          return { savedTeams: [...state.savedTeams.slice(-19), saved] };
+        }),
+      deleteSavedTeam: (index) =>
+        set((state) => ({
+          savedTeams: state.savedTeams.filter((_, i) => i !== index),
+        })),
+
       syncStatus: 'idle',
       syncMessage: '',
       setSyncStatus: (status, message) => set({ syncStatus: status, syncMessage: message }),
@@ -84,6 +118,7 @@ export const useAppStore = create<AppState>()(
         selectedLeague: state.selectedLeague,
         selectedCp: state.selectedCp,
         activeCups: Array.from(state.activeCups),
+        savedTeams: state.savedTeams,
       }),
       merge: (persisted, current) => {
         const p = persisted as Record<string, unknown>;
@@ -91,6 +126,7 @@ export const useAppStore = create<AppState>()(
           ...current,
           ...(p ?? {}),
           activeCups: new Set((p?.activeCups as string[]) ?? []),
+          savedTeams: (p?.savedTeams as SavedTeam[]) ?? [],
         };
       },
     }
