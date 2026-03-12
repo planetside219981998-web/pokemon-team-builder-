@@ -4,9 +4,12 @@
     "subtitle": "Stelle dein optimales PvP- & PvE-Team zusammen"
   },
   "nav": {
-    "teamBuilder": "Team Builder",
+    "teamBuilder": "Team",
     "raids": "Raids",
-    "settings": "Einstellungen"
+    "ivCalc": "IVs",
+    "h2h": "Kampf",
+    "types": "Typen",
+    "settings": "Optionen"
   },
   "league": {
     "select": "Liga waehlen",
@@ -47,6 +50,13 @@
     "resist": "Resistenz",
     "neutral": "Neutral",
     "sharedWeakness": "Geteilte Schwaeche"
+  },
+  "analysis": {
+    "title": "Team-Analyse",
+    "critical": "Kritische Schwaechen (2+ Mitglieder schwach)",
+    "unprotected": "Ungeschuetzte Schwaechen (kein Teammitglied resistent)",
+    "resists": "Team-Resistenzen",
+    "stabCoverage": "STAB-Abdeckung"
   },
   "recommendations": {
     "title": "Empfohlene Picks",
@@ -101,6 +111,52 @@
     "noCounters": "Waehle einen Raid-Boss um Counter zu sehen",
     "weakTo": "Schwach gegen",
     "resistsLabel": "Resistent gegen"
+  },
+  "iv": {
+    "title": "IV-Rechner",
+    "searchPokemon": "Pokemon suchen...",
+    "little": "Klein (500)",
+    "great": "Super (1500)",
+    "ultra": "Hyper (2500)",
+    "top": "Top",
+    "level": "Level",
+    "statProduct": "Stat-Produkt",
+    "ofBest": "% vom Besten",
+    "topRanks": "Beste IV-Verteilungen",
+    "showMore": "Mehr anzeigen..."
+  },
+  "h2h": {
+    "title": "Kopf an Kopf",
+    "pokemon1": "Pokemon 1",
+    "pokemon2": "Pokemon 2",
+    "tapToChange": "Tippen zum Aendern",
+    "typeAdvantage": "Typen-Vorteil",
+    "stats": "Basiswerte-Vergleich"
+  },
+  "typeChart": {
+    "title": "Typen-Tabelle",
+    "attacking": "Angreifender Typ",
+    "defending": "Verteidigender Typ",
+    "matrix": "Volle Typen-Tabelle",
+    "superEffective": "Sehr effektiv (1,6x)",
+    "notVeryEffective": "Nicht sehr effektiv (0,625x)",
+    "immune": "Doppelt resistent (0,39x)"
+  },
+  "detail": {
+    "baseStats": "Basiswerte",
+    "total": "Gesamt",
+    "typeEffectiveness": "Typen-Effektivitaet",
+    "moves": "Verfuegbare Attacken",
+    "family": "Entwicklungsfamilie",
+    "evolvesFrom": "Entwickelt sich aus",
+    "evolvesTo": "Entwickelt sich zu",
+    "buddy": "Kumpel-Distanz",
+    "thirdMove": "3. Attacke Kosten"
+  },
+  "meta": {
+    "title": "Meta-Pokemon",
+    "subtitle": "Top-gerankede Pokemon fuer diese Liga. Tippe + um sie zum Team hinzuzufuegen.",
+    "showMore": "Mehr anzeigen..."
   },
   "settings": {
     "title": "Einstellungen",

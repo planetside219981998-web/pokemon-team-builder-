@@ -6,6 +6,8 @@ import { TeamDisplay } from '@/components/team/TeamDisplay';
 import { TeamSaveLoad } from '@/components/team/TeamSaveLoad';
 import { PokemonSearch } from '@/components/search/PokemonSearch';
 import { TypeCoverageGrid } from '@/components/results/TypeCoverageGrid';
+import { TeamAnalysis } from '@/components/team/TeamAnalysis';
+import { MetaOverview } from '@/components/results/MetaOverview';
 import { RecommendationList } from '@/components/results/RecommendationList';
 import { db } from '@/data/db';
 import type { Pokemon } from '@/data/types';
@@ -65,6 +67,8 @@ export function TeamBuilderPage() {
         />
       )}
 
+      <TeamAnalysis />
+      <MetaOverview />
       <TypeCoverageGrid />
 
       {isDataReady && (

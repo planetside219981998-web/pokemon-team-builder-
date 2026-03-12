@@ -4,8 +4,11 @@
     "subtitle": "Build your optimal PvP & PvE team"
   },
   "nav": {
-    "teamBuilder": "Team Builder",
+    "teamBuilder": "Team",
     "raids": "Raids",
+    "ivCalc": "IVs",
+    "h2h": "Battle",
+    "types": "Types",
     "settings": "Settings"
   },
   "league": {
@@ -47,6 +50,13 @@
     "resist": "Resist",
     "neutral": "Neutral",
     "sharedWeakness": "Shared Weakness"
+  },
+  "analysis": {
+    "title": "Team Analysis",
+    "critical": "Critical Weaknesses (2+ members weak)",
+    "unprotected": "Unprotected Weaknesses (no team member resists)",
+    "resists": "Team Resistances",
+    "stabCoverage": "STAB Coverage"
   },
   "recommendations": {
     "title": "Recommended Picks",
@@ -101,6 +111,52 @@
     "noCounters": "Select a raid boss to see counters",
     "weakTo": "Weak to",
     "resistsLabel": "Resists"
+  },
+  "iv": {
+    "title": "IV Calculator",
+    "searchPokemon": "Search Pokemon...",
+    "little": "Little (500)",
+    "great": "Great (1500)",
+    "ultra": "Ultra (2500)",
+    "top": "Top",
+    "level": "Level",
+    "statProduct": "Stat Product",
+    "ofBest": "% of Best",
+    "topRanks": "Top IV Spreads",
+    "showMore": "Show more..."
+  },
+  "h2h": {
+    "title": "Head to Head",
+    "pokemon1": "Pokemon 1",
+    "pokemon2": "Pokemon 2",
+    "tapToChange": "Tap to change",
+    "typeAdvantage": "Type Advantage",
+    "stats": "Base Stats Comparison"
+  },
+  "typeChart": {
+    "title": "Type Chart",
+    "attacking": "Attacking Type",
+    "defending": "Defending Type",
+    "matrix": "Full Type Chart",
+    "superEffective": "Super Effective (1.6x)",
+    "notVeryEffective": "Not Very Effective (0.625x)",
+    "immune": "Double Resist (0.39x)"
+  },
+  "detail": {
+    "baseStats": "Base Stats",
+    "total": "Total",
+    "typeEffectiveness": "Type Effectiveness",
+    "moves": "Available Moves",
+    "family": "Evolution Family",
+    "evolvesFrom": "Evolves from",
+    "evolvesTo": "Evolves to",
+    "buddy": "Buddy Distance",
+    "thirdMove": "3rd Move Cost"
+  },
+  "meta": {
+    "title": "Meta Pokemon",
+    "subtitle": "Top ranked Pokemon for this league. Tap + to add to your team.",
+    "showMore": "Show more..."
   },
   "settings": {
     "title": "Settings",
