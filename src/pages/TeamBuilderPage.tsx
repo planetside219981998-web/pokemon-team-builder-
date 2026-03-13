@@ -54,11 +54,16 @@ export function TeamBuilderPage() {
     }
   };
 
+  const teamCount = team.filter((s) => s !== null).length;
+
   return (
     <div className="space-y-4">
       <LeagueSelector />
       <TeamDisplay />
       <TeamSaveLoad />
+
+      {/* Show meta overview prominently when team is empty */}
+      <MetaOverview startExpanded={teamCount === 0} />
 
       {isDataReady && (
         <PokemonSearch
@@ -68,7 +73,6 @@ export function TeamBuilderPage() {
       )}
 
       <TeamAnalysis />
-      <MetaOverview />
       <TypeCoverageGrid />
 
       {isDataReady && (

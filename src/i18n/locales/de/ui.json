@@ -155,8 +155,10 @@
   },
   "meta": {
     "title": "Meta-Pokemon",
-    "subtitle": "Top-gerankede Pokemon fuer diese Liga. Tippe + um sie zum Team hinzuzufuegen.",
-    "showMore": "Mehr anzeigen..."
+    "subtitle": "Top-gerankte Pokemon fuer diese Liga. Tippe eine Zeile fuer Details, + zum Hinzufuegen.",
+    "showMore": "Mehr anzeigen...",
+    "emptyTeamHint": "Nicht sicher wo du anfangen sollst? Waehle aus den Top-Meta-Pokemon unten!",
+    "inTeam": "Im Team"
   },
   "settings": {
     "title": "Einstellungen",

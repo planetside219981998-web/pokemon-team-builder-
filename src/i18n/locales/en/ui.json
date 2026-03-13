@@ -155,8 +155,10 @@
   },
   "meta": {
     "title": "Meta Pokemon",
-    "subtitle": "Top ranked Pokemon for this league. Tap + to add to your team.",
-    "showMore": "Show more..."
+    "subtitle": "Top ranked Pokemon for this league. Tap a row for details, tap + to add.",
+    "showMore": "Show more...",
+    "emptyTeamHint": "Not sure where to start? Pick from the top meta Pokemon below!",
+    "inTeam": "In Team"
   },
   "settings": {
     "title": "Settings",

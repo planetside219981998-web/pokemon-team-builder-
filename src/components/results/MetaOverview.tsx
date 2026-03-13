@@ -4,7 +4,9 @@ import { useAppStore } from '@/store/appStore';
 import { db, getRankings } from '@/data/db';
 import { getPokemonName } from '@/i18n/pokemonNames';
 import { spriteUrl } from '@/utils/sprites';
+import { TypeBadge } from '@/components/shared/TypeBadge';
 import { TYPE_HEX } from '@/data/typeColors';
+import { getWeaknesses, getResistances } from '@/engine/typeChart';
 import type { Pokemon, RankedPokemon } from '@/data/types';
 
 interface MetaPokemon {
@@ -12,7 +14,11 @@ interface MetaPokemon {
   ranking: RankedPokemon;
 }
 
-export function MetaOverview() {
+interface Props {
+  startExpanded?: boolean;
+}
+
+export function MetaOverview({ startExpanded = false }: Props) {
   const { t } = useTranslation();
   const language = useAppStore((s) => s.language);
   const selectedLeague = useAppStore((s) => s.selectedLeague);
@@ -23,9 +29,16 @@ export function MetaOverview() {
 
   const [metaPokemon, setMetaPokemon] = useState<MetaPokemon[]>([]);
   const [showCount, setShowCount] = useState(20);
-  const [expanded, setExpanded] = useState(true);
+  const [expanded, setExpanded] = useState(startExpanded);
+  const [selectedDetail, setSelectedDetail] = useState<string | null>(null);
 
   const hasEmptySlot = team.some((s) => s === null);
+  const teamCount = team.filter((s) => s !== null).length;
+
+  // Auto-expand when team is empty
+  useEffect(() => {
+    if (teamCount === 0) setExpanded(true);
+  }, [teamCount]);
 
   useEffect(() => {
     if (syncStatus !== 'ready') return;
@@ -57,9 +70,13 @@ export function MetaOverview() {
   if (metaPokemon.length === 0) return null;
 
   const maxScore = metaPokemon[0]?.ranking.score ?? 100;
+  const leagueLabel = selectedLeague === 'all' ? t('league.great') :
+    selectedLeague === 'great' ? t('league.great') :
+    selectedLeague === 'ultra' ? t('league.ultra') :
+    t('league.master');
 
   return (
-    <div className="bg-gradient-to-br from-slate-800/80 to-slate-900/90 backdrop-blur-sm rounded-xl border border-slate-700 shadow-lg overflow-hidden">
+    <div className="bg-gradient-to-br from-slate-800/80 to-slate-900/90 backdrop-blur-sm rounded-xl border border-yellow-500/20 shadow-lg overflow-hidden">
       <button
         onClick={() => setExpanded(!expanded)}
         className="w-full flex items-center justify-between p-4 hover:bg-slate-700/30 transition-colors"
@@ -68,7 +85,7 @@ export function MetaOverview() {
           <svg className="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
           </svg>
-          {t('meta.title')}
+          {t('meta.title')} - {leagueLabel}
         </h2>
         <svg className={`w-4 h-4 text-slate-400 transition-transform ${expanded ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -77,70 +94,138 @@ export function MetaOverview() {
 
       {expanded && (
         <div className="px-4 pb-4">
+          {/* Prominent hint when team is empty */}
+          {teamCount === 0 && (
+            <div className="mb-3 p-3 rounded-lg bg-yellow-900/20 border border-yellow-500/30 text-center">
+              <p className="text-xs text-yellow-300 font-medium">{t('meta.emptyTeamHint')}</p>
+            </div>
+          )}
+
           <p className="text-xs text-slate-500 mb-3">{t('meta.subtitle')}</p>
-          <div className="space-y-1.5">
+
+          <div className="space-y-1">
             {metaPokemon.slice(0, showCount).map((mp, idx) => {
               const primaryType = mp.pokemon.types[0] ?? 'normal';
               const typeColor = TYPE_HEX[primaryType] ?? '#475569';
               const scorePct = (mp.ranking.score / maxScore) * 100;
               const isInTeam = team.some((s) => s?.pokemon.speciesId === mp.pokemon.speciesId);
+              const isExpanded = selectedDetail === mp.pokemon.speciesId;
 
               return (
-                <div
-                  key={mp.pokemon.speciesId}
-                  className={`flex items-center gap-2 rounded-lg px-2 py-1.5 transition-all hover:bg-slate-700/40 ${isInTeam ? 'ring-1 ring-green-500/50 bg-green-900/10' : ''}`}
-                >
-                  {/* Rank */}
-                  <span className={`text-xs font-bold w-6 text-center ${
-                    idx < 3 ? 'text-yellow-400' : idx < 10 ? 'text-slate-300' : 'text-slate-500'
-                  }`}>
-                    {idx + 1}
-                  </span>
+                <div key={mp.pokemon.speciesId}>
+                  <div
+                    className={`flex items-center gap-2 rounded-lg px-2 py-1.5 transition-all cursor-pointer ${
+                      isInTeam ? 'ring-1 ring-green-500/50 bg-green-900/10' :
+                      isExpanded ? 'bg-slate-700/60' : 'hover:bg-slate-700/40'
+                    }`}
+                    onClick={() => setSelectedDetail(isExpanded ? null : mp.pokemon.speciesId)}
+                  >
+                    {/* Rank badge */}
+                    <span className={`text-xs font-bold w-6 text-center ${
+                      idx < 3 ? 'text-yellow-400' : idx < 10 ? 'text-slate-300' : 'text-slate-500'
+                    }`}>
+                      {idx < 3 ? ['🥇', '🥈', '🥉'][idx] : idx + 1}
+                    </span>
 
-                  {/* Sprite */}
-                  <img src={spriteUrl(mp.pokemon.dex)} alt="" className="w-8 h-8" loading="lazy" />
+                    {/* Sprite */}
+                    <img src={spriteUrl(mp.pokemon.dex)} alt="" className="w-9 h-9" loading="lazy" />
 
-                  {/* Name + Types */}
-                  <div className="flex-1 min-w-0">
-                    <div className="text-xs font-medium text-white truncate">
-                      {getPokemonName(mp.pokemon.speciesId, mp.pokemon.speciesName, language)}
+                    {/* Name + Types */}
+                    <div className="flex-1 min-w-0">
+                      <div className="text-xs font-medium text-white truncate">
+                        {getPokemonName(mp.pokemon.speciesId, mp.pokemon.speciesName, language)}
+                      </div>
+                      <div className="flex gap-0.5 mt-0.5">
+                        {mp.pokemon.types.map((type) => (
+                          <span
+                            key={type}
+                            className="text-[8px] px-1.5 py-px rounded-full text-white font-medium"
+                            style={{ backgroundColor: `${TYPE_HEX[type]}cc` }}
+                          >
+                            {t(`types.${type}`).slice(0, 3)}
+                          </span>
+                        ))}
+                      </div>
                     </div>
-                    <div className="flex gap-0.5 mt-0.5">
-                      {mp.pokemon.types.map((type) => (
-                        <span
-                          key={type}
-                          className="text-[8px] px-1 py-px rounded-full text-white font-medium"
-                          style={{ backgroundColor: `${TYPE_HEX[type]}cc` }}
-                        >
-                          {t(`types.${type}`).slice(0, 3)}
+
+                    {/* Score bar */}
+                    <div className="w-16 h-2.5 bg-slate-700 rounded-full overflow-hidden">
+                      <div
+                        className="h-full rounded-full animate-barGrow"
+                        style={{
+                          width: `${scorePct}%`,
+                          background: `linear-gradient(90deg, ${typeColor}, ${typeColor}88)`,
+                        }}
+                      />
+                    </div>
+                    <span className="text-[10px] text-slate-400 w-8 text-right font-mono">{mp.ranking.score.toFixed(0)}</span>
+
+                    {/* Add button */}
+                    {hasEmptySlot && !isInTeam && (
+                      <button
+                        onClick={(e) => { e.stopPropagation(); addToTeam(mp.pokemon, mp.ranking); }}
+                        className="p-1.5 rounded-lg bg-green-600/30 text-green-400 hover:bg-green-500 hover:text-white transition-all"
+                        title={t('recommendations.addToTeam')}
+                      >
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                        </svg>
+                      </button>
+                    )}
+
+                    {isInTeam && (
+                      <span className="text-[10px] text-green-400 font-medium px-1.5 py-0.5 bg-green-500/20 rounded-full">
+                        {t('meta.inTeam')}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Expanded detail row */}
+                  {isExpanded && (
+                    <div className="ml-8 mr-2 mt-1 mb-2 p-3 rounded-lg bg-slate-700/30 border border-slate-600/50 animate-slideUp">
+                      <div className="grid grid-cols-3 gap-2 mb-2 text-center">
+                        <div>
+                          <div className="text-[9px] text-slate-500">ATK</div>
+                          <div className="text-sm font-bold text-red-400">{mp.pokemon.baseStats.atk}</div>
+                        </div>
+                        <div>
+                          <div className="text-[9px] text-slate-500">DEF</div>
+                          <div className="text-sm font-bold text-blue-400">{mp.pokemon.baseStats.def}</div>
+                        </div>
+                        <div>
+                          <div className="text-[9px] text-slate-500">HP</div>
+                          <div className="text-sm font-bold text-green-400">{mp.pokemon.baseStats.hp}</div>
+                        </div>
+                      </div>
+
+                      {/* Weaknesses */}
+                      <div className="mb-1.5">
+                        <span className="text-[9px] text-red-400 font-medium">{t('raids.weakTo')}: </span>
+                        <span className="inline-flex flex-wrap gap-0.5">
+                          {getWeaknesses(mp.pokemon.types).map((type) => (
+                            <TypeBadge key={type} type={type} size="sm" />
+                          ))}
                         </span>
-                      ))}
+                      </div>
+
+                      {/* Resistances */}
+                      <div>
+                        <span className="text-[9px] text-green-400 font-medium">{t('raids.resistsLabel')}: </span>
+                        <span className="inline-flex flex-wrap gap-0.5">
+                          {getResistances(mp.pokemon.types).map((type) => (
+                            <TypeBadge key={type} type={type} size="sm" />
+                          ))}
+                        </span>
+                      </div>
+
+                      {/* Recommended moveset */}
+                      {mp.ranking.moveset && mp.ranking.moveset.length > 0 && (
+                        <div className="mt-2 text-[10px] text-slate-400">
+                          <span className="font-medium">{t('recommendations.moves')}: </span>
+                          {mp.ranking.moveset.join(' / ')}
+                        </div>
+                      )}
                     </div>
-                  </div>
-
-                  {/* Score bar */}
-                  <div className="w-16 h-2 bg-slate-700 rounded-full overflow-hidden">
-                    <div
-                      className="h-full rounded-full animate-barGrow"
-                      style={{
-                        width: `${scorePct}%`,
-                        background: `linear-gradient(90deg, ${typeColor}, ${typeColor}88)`,
-                      }}
-                    />
-                  </div>
-                  <span className="text-[10px] text-slate-400 w-8 text-right">{mp.ranking.score.toFixed(0)}</span>
-
-                  {/* Add button */}
-                  {hasEmptySlot && !isInTeam && (
-                    <button
-                      onClick={() => addToTeam(mp.pokemon, mp.ranking)}
-                      className="p-1 rounded-lg bg-green-600/30 text-green-400 hover:bg-green-600/50 transition-colors"
-                      title={t('recommendations.addToTeam')}
-                    >
-                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                      </svg>
-                    </button>
                   )}
                 </div>
               );
