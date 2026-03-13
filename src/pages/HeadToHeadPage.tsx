@@ -186,8 +186,8 @@ export function HeadToHeadPage() {
 
           {/* Weaknesses/Resistances side by side */}
           <div className="grid grid-cols-2 gap-3">
-            <TypeInfoCard pokemon={pokemon1} language={language} color="red" />
-            <TypeInfoCard pokemon={pokemon2} language={language} color="blue" />
+            <TypeInfoCard pokemon={pokemon1} language={language} />
+            <TypeInfoCard pokemon={pokemon2} language={language} />
           </div>
         </div>
       )}
@@ -256,7 +256,7 @@ function EffectivenessBar({ label, mult }: { label: string; mult: number }) {
   );
 }
 
-function TypeInfoCard({ pokemon, language }: { pokemon: Pokemon; language: string; color: string }) {
+function TypeInfoCard({ pokemon, language }: { pokemon: Pokemon; language: string }) {
   const weaknesses = getWeaknesses(pokemon.types);
   const resistances = getResistances(pokemon.types);
   const { t } = useTranslation();
