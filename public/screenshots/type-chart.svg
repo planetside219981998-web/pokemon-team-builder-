@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="390" height="844" viewBox="0 0 390 844">
+  <rect width="390" height="844" fill="#0f172a"/>
+  <text x="195" y="50" text-anchor="middle" fill="white" font-size="20" font-weight="bold" font-family="system-ui">Type Chart</text>
+  <!-- Type grid hint -->
+  <rect x="20" y="80" width="350" height="650" rx="12" fill="#1e293b" stroke="#334155"/>
+  <!-- Column headers -->
+  <g font-size="8" font-family="system-ui" fill="#94a3b8">
+    <rect x="80" y="90" width="24" height="24" rx="4" fill="#A8A878"/><text x="92" y="106" text-anchor="middle" fill="white">NOR</text>
+    <rect x="108" y="90" width="24" height="24" rx="4" fill="#F08030"/><text x="120" y="106" text-anchor="middle" fill="white">FIR</text>
+    <rect x="136" y="90" width="24" height="24" rx="4" fill="#6890F0"/><text x="148" y="106" text-anchor="middle" fill="white">WAT</text>
+    <rect x="164" y="90" width="24" height="24" rx="4" fill="#78C850"/><text x="176" y="106" text-anchor="middle" fill="white">GRA</text>
+    <rect x="192" y="90" width="24" height="24" rx="4" fill="#F8D030"/><text x="204" y="106" text-anchor="middle" fill="white">ELE</text>
+    <rect x="220" y="90" width="24" height="24" rx="4" fill="#98D8D8"/><text x="232" y="106" text-anchor="middle" fill="white">ICE</text>
+    <rect x="248" y="90" width="24" height="24" rx="4" fill="#C03028"/><text x="260" y="106" text-anchor="middle" fill="white">FIG</text>
+    <rect x="276" y="90" width="24" height="24" rx="4" fill="#A040A0"/><text x="288" y="106" text-anchor="middle" fill="white">POI</text>
+    <rect x="304" y="90" width="24" height="24" rx="4" fill="#E0C068"/><text x="316" y="106" text-anchor="middle" fill="white">GRO</text>
+    <rect x="332" y="90" width="24" height="24" rx="4" fill="#A890F0"/><text x="344" y="106" text-anchor="middle" fill="white">FLY</text>
+  </g>
+  <!-- Sample cells -->
+  <g font-size="8" font-family="monospace">
+    <rect x="80" y="120" width="24" height="20" fill="#22c55e30"/><text x="92" y="134" text-anchor="middle" fill="#22c55e">1.6</text>
+    <rect x="108" y="120" width="24" height="20" fill="#33415540"/><text x="120" y="134" text-anchor="middle" fill="#64748b">1</text>
+    <rect x="136" y="120" width="24" height="20" fill="#ef444430"/><text x="148" y="134" text-anchor="middle" fill="#ef4444">.6</text>
+    <rect x="164" y="120" width="24" height="20" fill="#22c55e30"/><text x="176" y="134" text-anchor="middle" fill="#22c55e">1.6</text>
+    <rect x="192" y="120" width="24" height="20" fill="#33415540"/><text x="204" y="134" text-anchor="middle" fill="#64748b">1</text>
+    <rect x="220" y="120" width="24" height="20" fill="#22c55e30"/><text x="232" y="134" text-anchor="middle" fill="#22c55e">1.6</text>
+    <rect x="248" y="120" width="24" height="20" fill="#ef444430"/><text x="260" y="134" text-anchor="middle" fill="#ef4444">.6</text>
+    <rect x="276" y="120" width="24" height="20" fill="#33415540"/><text x="288" y="134" text-anchor="middle" fill="#64748b">1</text>
+    <rect x="304" y="120" width="24" height="20" fill="#22c55e30"/><text x="316" y="134" text-anchor="middle" fill="#22c55e">1.6</text>
+    <rect x="332" y="120" width="24" height="20" fill="#ef444430"/><text x="344" y="134" text-anchor="middle" fill="#ef4444">.6</text>
+  </g>
+  <!-- More rows simulated -->
+  <g opacity="0.6">
+    <rect x="80" y="144" width="280" height="20" fill="#1e293b"/>
+    <rect x="80" y="168" width="280" height="20" fill="#1a2332"/>
+    <rect x="80" y="192" width="280" height="20" fill="#1e293b"/>
+    <rect x="80" y="216" width="280" height="20" fill="#1a2332"/>
+    <rect x="80" y="240" width="280" height="20" fill="#1e293b"/>
+    <rect x="80" y="264" width="280" height="20" fill="#1a2332"/>
+    <rect x="80" y="288" width="280" height="20" fill="#1e293b"/>
+  </g>
+  <!-- Legend -->
+  <rect x="40" y="660" width="16" height="16" rx="3" fill="#22c55e30"/>
+  <text x="65" y="673" fill="#22c55e" font-size="11" font-family="system-ui">Super Effective (1.6x)</text>
+  <rect x="40" y="685" width="16" height="16" rx="3" fill="#ef444430"/>
+  <text x="65" y="698" fill="#ef4444" font-size="11" font-family="system-ui">Not Very Effective (0.625x)</text>
+  <rect x="40" y="710" width="16" height="16" rx="3" fill="#64748b30"/>
+  <text x="65" y="723" fill="#64748b" font-size="11" font-family="system-ui">Double Resist (0.39x)</text>
+  <!-- Bottom nav -->
+  <rect x="0" y="790" width="390" height="54" fill="#0f172a" stroke="#334155"/>
+  <text x="40" y="822" text-anchor="middle" fill="#64748b" font-size="10" font-family="system-ui">Team</text>
+  <text x="110" y="822" text-anchor="middle" fill="#64748b" font-size="10" font-family="system-ui">Raids</text>
+  <text x="180" y="822" text-anchor="middle" fill="#64748b" font-size="10" font-family="system-ui">IVs</text>
+  <text x="245" y="822" text-anchor="middle" fill="#64748b" font-size="10" font-family="system-ui">Battle</text>
+  <text x="310" y="822" text-anchor="middle" fill="#ef4444" font-size="10" font-family="system-ui">Types</text>
+  <text x="365" y="822" text-anchor="middle" fill="#64748b" font-size="10" font-family="system-ui">Settings</text>
+</svg>
