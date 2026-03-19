@@ -1,19 +1,35 @@
 import { db } from './db';
 import type { Pokemon } from './types';
 
-interface RaidBossEntry {
-  pokemon_id: number;
-  pokemon_name: string;
+// Matches the actual PoGoAPI.net response structure
+interface RaidBossApiEntry {
+  id: number;
+  name: string;
   form?: string;
-  tier: string;
+  tier: number | string;
+  type: string[];
+  possible_shiny?: boolean;
+  boosted_weather?: string[];
+  max_unboosted_cp?: number;
+  max_boosted_cp?: number;
 }
 
-interface RaidBossesResponse {
-  current: Record<string, RaidBossEntry[]>;
-}
+type RaidBossesResponse = {
+  current: Record<string, RaidBossApiEntry[]>;
+};
 
 const CACHE_KEY = 'raid_bosses_cache';
 const CACHE_TTL = 3600000; // 1 hour
+
+export interface RaidBossEntry {
+  id: number;
+  name: string;
+  form?: string;
+  tier: string;
+  types: string[];
+  shiny: boolean;
+  maxCp: number;
+}
 
 export interface RaidBossByTier {
   tier: string;
@@ -27,8 +43,10 @@ function getTierLabel(tier: string): string {
     case '3': return 'Tier 3';
     case '5': return 'Tier 5 (Legendary)';
     case 'mega': return 'Mega Raid';
+    case 'mega_legendary': return 'Mega Legendary';
     case 'ultra_beast': return 'Ultra Beast';
-    case '6': return 'Mega / Primal';
+    case '6': return 'Primal';
+    case 'ex': return 'EX Raid';
     default: return `Tier ${tier}`;
   }
 }
@@ -36,11 +54,13 @@ function getTierLabel(tier: string): string {
 function getTierOrder(tier: string): number {
   switch (tier) {
     case '5': return 1;
-    case '6': return 2;
-    case 'mega': return 3;
-    case 'ultra_beast': return 4;
-    case '3': return 5;
-    case '1': return 6;
+    case 'mega_legendary': return 2;
+    case '6': return 3;
+    case 'mega': return 4;
+    case 'ultra_beast': return 5;
+    case 'ex': return 6;
+    case '3': return 7;
+    case '1': return 8;
     default: return 10;
   }
 }
@@ -74,16 +94,29 @@ export async function fetchCurrentRaidBosses(): Promise<RaidBossByTier[]> {
     const tiers: RaidBossByTier[] = [];
 
     for (const [tierKey, entries] of Object.entries(json.current ?? {})) {
+      if (!entries || entries.length === 0) continue;
+
       const bosses: { pokemon: Pokemon; entry: RaidBossEntry }[] = [];
 
-      for (const entry of entries) {
-        // Try to find pokemon by dex number first, then by name
-        let pokemon = pokemonByDex.get(entry.pokemon_id);
+      for (const apiEntry of entries) {
+        // Match by dex number first, then by name
+        let pokemon = pokemonByDex.get(apiEntry.id);
         if (!pokemon) {
-          pokemon = pokemonByName.get(entry.pokemon_name.toLowerCase());
+          pokemon = pokemonByName.get(apiEntry.name.toLowerCase());
         }
         if (pokemon) {
-          bosses.push({ pokemon, entry });
+          bosses.push({
+            pokemon,
+            entry: {
+              id: apiEntry.id,
+              name: apiEntry.name,
+              form: apiEntry.form,
+              tier: tierKey,
+              types: apiEntry.type ?? [],
+              shiny: apiEntry.possible_shiny ?? false,
+              maxCp: apiEntry.max_unboosted_cp ?? 0,
+            },
+          });
         }
       }
 

@@ -23,13 +23,14 @@ const FRIEND_OPTIONS = [
   'none', 'good', 'great', 'ultra', 'best',
 ] as const;
 
-const TIER_COLORS: Record<string, { bg: string; border: string; text: string }> = {
-  '5': { bg: 'rgba(234, 179, 8, 0.08)', border: 'rgba(234, 179, 8, 0.2)', text: '#fbbf24' },
-  '6': { bg: 'rgba(168, 85, 247, 0.08)', border: 'rgba(168, 85, 247, 0.2)', text: '#a855f7' },
-  'mega': { bg: 'rgba(168, 85, 247, 0.08)', border: 'rgba(168, 85, 247, 0.2)', text: '#a855f7' },
-  'ultra_beast': { bg: 'rgba(59, 130, 246, 0.08)', border: 'rgba(59, 130, 246, 0.2)', text: '#60a5fa' },
-  '3': { bg: 'rgba(249, 115, 22, 0.08)', border: 'rgba(249, 115, 22, 0.2)', text: '#fb923c' },
-  '1': { bg: 'rgba(107, 114, 128, 0.08)', border: 'rgba(107, 114, 128, 0.2)', text: '#9ca3af' },
+const TIER_COLORS: Record<string, { bg: string; border: string; text: string; label: string }> = {
+  '5': { bg: 'rgba(234, 179, 8, 0.08)', border: 'rgba(234, 179, 8, 0.25)', text: '#fbbf24', label: 'T5' },
+  'mega_legendary': { bg: 'rgba(168, 85, 247, 0.08)', border: 'rgba(168, 85, 247, 0.25)', text: '#a855f7', label: 'ML' },
+  '6': { bg: 'rgba(168, 85, 247, 0.08)', border: 'rgba(168, 85, 247, 0.25)', text: '#a855f7', label: 'P' },
+  'mega': { bg: 'rgba(236, 72, 153, 0.08)', border: 'rgba(236, 72, 153, 0.25)', text: '#ec4899', label: 'M' },
+  'ultra_beast': { bg: 'rgba(59, 130, 246, 0.08)', border: 'rgba(59, 130, 246, 0.25)', text: '#60a5fa', label: 'UB' },
+  '3': { bg: 'rgba(249, 115, 22, 0.08)', border: 'rgba(249, 115, 22, 0.25)', text: '#fb923c', label: 'T3' },
+  '1': { bg: 'rgba(107, 114, 128, 0.08)', border: 'rgba(107, 114, 128, 0.25)', text: '#9ca3af', label: 'T1' },
 };
 
 export function RaidsPage() {
@@ -104,6 +105,13 @@ export function RaidsPage() {
       </h1>
 
       {/* Current Raid Bosses */}
+      {loadingBosses && (
+        <div className="glass-card rounded-2xl p-6 text-center">
+          <div className="w-8 h-8 mx-auto mb-2 border-2 border-orange-400/30 border-t-orange-400 rounded-full animate-spin" />
+          <p className="text-sm text-slate-400">{t('raids.loadingBosses', 'Loading current raid bosses...')}</p>
+        </div>
+      )}
+
       {raidBosses.length > 0 && !boss && (
         <div className="glass-card rounded-2xl overflow-hidden">
           <div className="p-4 border-b border-slate-700/30">
@@ -114,12 +122,12 @@ export function RaidsPage() {
             <p className="text-xs text-slate-400 mt-1">{t('raids.currentBossesHint', 'Tap a boss to find the best counters')}</p>
           </div>
 
-          <div className="p-4 space-y-4">
+          <div className="p-4 space-y-5">
             {raidBosses.map((tier) => {
               const colors = TIER_COLORS[tier.tier] ?? TIER_COLORS['1']!;
               return (
                 <div key={tier.tier}>
-                  <div className="flex items-center gap-2 mb-2">
+                  <div className="flex items-center gap-2 mb-2.5">
                     <span className="text-xs font-bold px-2.5 py-1 rounded-lg" style={{
                       background: colors.bg,
                       border: `1px solid ${colors.border}`,
@@ -128,43 +136,55 @@ export function RaidsPage() {
                       {tier.tierLabel}
                     </span>
                     <div className="flex-1 h-px bg-gradient-to-r from-slate-600/50 to-transparent" />
+                    <span className="text-[10px] text-slate-500">{tier.bosses.length} Boss{tier.bosses.length > 1 ? 'es' : ''}</span>
                   </div>
 
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                    {tier.bosses.map(({ pokemon }) => {
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                    {tier.bosses.map(({ pokemon, entry }) => {
                       const typeColor = TYPE_HEX[pokemon.types[0] ?? 'normal'] ?? '#475569';
                       return (
                         <button
                           key={`${pokemon.speciesId}-${tier.tier}`}
                           onClick={() => handleSelectBoss(pokemon)}
-                          className="flex items-center gap-2 px-3 py-2 rounded-xl transition-all hover:scale-[1.02] cursor-pointer"
+                          className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all hover:scale-[1.02] cursor-pointer group"
                           style={{
-                            background: `linear-gradient(135deg, ${typeColor}10, rgba(15, 23, 42, 0.6))`,
-                            border: `1px solid ${typeColor}25`,
+                            background: `linear-gradient(135deg, ${typeColor}12, rgba(15, 23, 42, 0.6))`,
+                            border: `1px solid ${typeColor}30`,
                           }}
                         >
-                          <img
-                            src={spriteUrl(pokemon.dex)}
-                            alt=""
-                            className="w-10 h-10 drop-shadow-md shrink-0"
-                            loading="lazy"
-                          />
+                          <div className="relative shrink-0">
+                            <img
+                              src={spriteUrl(pokemon.dex)}
+                              alt=""
+                              className="w-12 h-12 drop-shadow-md group-hover:scale-110 transition-transform"
+                              loading="lazy"
+                            />
+                            {entry.shiny && (
+                              <span className="absolute -top-0.5 -right-0.5 text-[10px]" title="Shiny available">*</span>
+                            )}
+                          </div>
                           <div className="flex-1 min-w-0 text-left">
-                            <div className="text-xs font-semibold text-white truncate">
+                            <div className="text-sm font-semibold text-white truncate">
                               {getPokemonName(pokemon.speciesId, pokemon.speciesName, language)}
                             </div>
-                            <div className="flex gap-0.5 mt-0.5">
+                            <div className="flex gap-1 mt-0.5">
                               {displayTypes(pokemon.types).map((type) => (
                                 <span
                                   key={type}
-                                  className="text-[8px] px-1 py-px rounded text-white/80 font-medium"
-                                  style={{ backgroundColor: `${TYPE_HEX[type]}80` }}
+                                  className="text-[9px] px-1.5 py-px rounded-md text-white/80 font-medium"
+                                  style={{ backgroundColor: `${TYPE_HEX[type]}90` }}
                                 >
-                                  {t(`types.${type}`).slice(0, 3)}
+                                  {t(`types.${type}`)}
                                 </span>
                               ))}
                             </div>
+                            {entry.maxCp > 0 && (
+                              <div className="text-[10px] text-slate-500 mt-0.5">CP {entry.maxCp}</div>
+                            )}
                           </div>
+                          <svg className="w-4 h-4 text-slate-500 group-hover:text-white transition-colors shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
                         </button>
                       );
                     })}
@@ -176,17 +196,17 @@ export function RaidsPage() {
         </div>
       )}
 
-      {loadingBosses && <LoadingSpinner message={t('raids.loadingBosses', 'Loading current raid bosses...')} />}
-
-      {/* Boss selection via search */}
+      {/* Manual boss search (always available as fallback) */}
       {isDataReady && !boss && (
         <div>
-          <label className="text-sm font-semibold text-slate-300 block mb-2">{t('raids.selectBoss')}</label>
+          <label className="text-sm font-semibold text-slate-300 block mb-2">
+            {raidBosses.length > 0 ? t('raids.orSearch', 'Or search any Pokemon:') : t('raids.selectBoss')}
+          </label>
           <PokemonSearch onSelect={handleSelectBoss} />
         </div>
       )}
 
-      {/* Selected boss */}
+      {/* Selected boss display */}
       {boss && (
         <div
           className="glass-card rounded-2xl p-4 animate-scaleIn"
@@ -227,9 +247,7 @@ export function RaidsPage() {
               <div className="p-2.5 rounded-xl" style={{ background: 'rgba(153, 27, 27, 0.1)', border: '1px solid rgba(239, 68, 68, 0.15)' }}>
                 <span className="text-xs text-red-400 font-semibold block mb-1.5">{t('raids.weakTo')}</span>
                 <div className="flex flex-wrap gap-1">
-                  {bossWeaknesses.map((type) => (
-                    <TypeBadge key={type} type={type} size="sm" />
-                  ))}
+                  {bossWeaknesses.map((type) => <TypeBadge key={type} type={type} size="sm" />)}
                 </div>
               </div>
             )}
@@ -237,9 +255,7 @@ export function RaidsPage() {
               <div className="p-2.5 rounded-xl" style={{ background: 'rgba(20, 83, 45, 0.1)', border: '1px solid rgba(34, 197, 94, 0.15)' }}>
                 <span className="text-xs text-green-400 font-semibold block mb-1.5">{t('raids.resistsLabel')}</span>
                 <div className="flex flex-wrap gap-1">
-                  {bossResistances.map((type) => (
-                    <TypeBadge key={type} type={type} size="sm" />
-                  ))}
+                  {bossResistances.map((type) => <TypeBadge key={type} type={type} size="sm" />)}
                 </div>
               </div>
             )}
@@ -277,42 +293,47 @@ export function RaidsPage() {
         </div>
       )}
 
-      {/* Results */}
+      {/* Counter Results */}
       {loading && <LoadingSpinner message={t('recommendations.loading')} />}
 
       {!loading && counters.length > 0 && (
         <div>
           <h2 className="text-sm font-bold text-white mb-3 flex items-center gap-2">
             <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{
-              background: 'linear-gradient(135deg, rgba(249, 115, 22, 0.2), rgba(239, 68, 68, 0.1))',
-              border: '1px solid rgba(249, 115, 22, 0.2)',
+              background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(22, 163, 74, 0.1))',
+              border: '1px solid rgba(34, 197, 94, 0.2)',
             }}>
-              <svg className="w-4 h-4 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-4 h-4 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
             </div>
-            {t('raids.topCounters')}
-            <span className="text-xs text-slate-400 font-normal">({t('raids.results', { count: counters.length })})</span>
+            {t('raids.bestCounters', 'Best Counters')}
+            {boss && (
+              <span className="text-xs text-slate-400 font-normal">
+                vs. {getPokemonName(boss.speciesId, boss.speciesName, language)}
+              </span>
+            )}
           </h2>
           <div className="space-y-2">
             {counters.map((counter, idx) => {
               const cTypeColor = TYPE_HEX[counter.pokemon.types[0] ?? 'normal'] ?? '#475569';
               return (
                 <div
-                  key={`${counter.pokemon.speciesId}-${idx}`}
+                  key={`${counter.pokemon.speciesId}-${counter.fastMove.moveId}-${counter.chargedMove.moveId}`}
                   className="glass-card rounded-2xl px-4 py-3 flex items-center gap-3 animate-slideUp"
                   style={{ borderColor: `${cTypeColor}20` }}
                 >
                   <div className="relative shrink-0">
+                    <div className="absolute inset-0 rounded-full blur-md opacity-20" style={{ backgroundColor: cTypeColor }} />
                     <img
                       src={spriteUrl(counter.pokemon.dex)}
                       alt={counter.pokemon.speciesName}
-                      className="w-12 h-12 drop-shadow-lg"
+                      className="w-12 h-12 drop-shadow-lg relative z-[1]"
                       loading="lazy"
                       onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
                     />
                     <span
-                      className="absolute -top-1 -left-1 w-5 h-5 rounded-lg flex items-center justify-center text-[10px] font-bold text-white"
+                      className="absolute -top-1 -left-1 w-5 h-5 rounded-lg flex items-center justify-center text-[10px] font-bold text-white z-[2]"
                       style={{ backgroundColor: cTypeColor }}
                     >
                       {idx + 1}
