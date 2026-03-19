@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppStore } from '@/store/appStore';
 import { db, getRankings } from '@/data/db';
+import { ensureRankings } from '@/data/sync';
 import { getPokemonName } from '@/i18n/pokemonNames';
 import { spriteUrl } from '@/utils/sprites';
 import { TypeBadge } from '@/components/shared/TypeBadge';
@@ -59,6 +60,7 @@ export function MetaOverview({ startExpanded = false }: Props) {
   const syncStatus = useAppStore((s) => s.syncStatus);
 
   const [metaPokemon, setMetaPokemon] = useState<MetaPokemon[]>([]);
+  const [loadingMeta, setLoadingMeta] = useState(false);
   const [showCount, setShowCount] = useState(30);
   const [expanded, setExpanded] = useState(startExpanded);
   const [selectedDetail, setSelectedDetail] = useState<string | null>(null);
@@ -74,35 +76,41 @@ export function MetaOverview({ startExpanded = false }: Props) {
   useEffect(() => {
     if (syncStatus !== 'ready') return;
 
-    const league = selectedLeague === 'all' ? 'great' : selectedLeague;
-    const cp = selectedLeague === 'all' ? 1500 : selectedCp;
+    const league = selectedLeague;
+    const cp = selectedCp;
 
-    Promise.all([
-      getRankings(league, cp),
-      db.pokemon.toArray(),
-    ]).then(([rankings, allPokemon]) => {
-      const pokemonMap = new Map<string, Pokemon>();
-      for (const p of allPokemon) pokemonMap.set(p.speciesId, p);
+    setLoadingMeta(true);
 
-      const sorted = rankings
-        .sort((a, b) => b.score - a.score)
-        .slice(0, 50)
-        .map((r) => {
-          const pokemon = pokemonMap.get(r.speciesId);
-          if (!pokemon) return null;
-          return { pokemon, ranking: r };
-        })
-        .filter(Boolean) as MetaPokemon[];
+    // Ensure rankings are downloaded for this league, then load
+    ensureRankings(league, cp)
+      .then(() => Promise.all([
+        getRankings(league, cp),
+        db.pokemon.toArray(),
+      ]))
+      .then(([rankings, allPokemon]) => {
+        const pokemonMap = new Map<string, Pokemon>();
+        for (const p of allPokemon) pokemonMap.set(p.speciesId, p);
 
-      setMetaPokemon(sorted);
-    });
+        const sorted = rankings
+          .sort((a, b) => b.score - a.score)
+          .slice(0, 50)
+          .map((r) => {
+            const pokemon = pokemonMap.get(r.speciesId);
+            if (!pokemon) return null;
+            return { pokemon, ranking: r };
+          })
+          .filter(Boolean) as MetaPokemon[];
+
+        setMetaPokemon(sorted);
+      })
+      .finally(() => setLoadingMeta(false));
   }, [syncStatus, selectedLeague, selectedCp]);
 
-  if (metaPokemon.length === 0) return null;
+  if (metaPokemon.length === 0 && !loadingMeta && syncStatus === 'ready') return null;
 
   const maxScore = metaPokemon[0]?.ranking.score ?? 100;
-  const leagueLabel = selectedLeague === 'all' ? t('league.great') :
-    selectedLeague === 'great' ? t('league.great') :
+  const leagueLabel =
+    selectedLeague === 'great' || selectedLeague === 'all' ? t('league.great') :
     selectedLeague === 'ultra' ? t('league.ultra') :
     t('league.master');
 
@@ -141,8 +149,16 @@ export function MetaOverview({ startExpanded = false }: Props) {
 
       {expanded && (
         <div className="px-4 pb-4">
+          {/* Loading state */}
+          {loadingMeta && metaPokemon.length === 0 && (
+            <div className="py-8 text-center">
+              <div className="w-10 h-10 mx-auto mb-3 border-2 border-yellow-400/30 border-t-yellow-400 rounded-full animate-spin" />
+              <p className="text-sm text-slate-400">{t('meta.loading', 'Loading meta rankings...')}</p>
+            </div>
+          )}
+
           {/* Prominent hint when team is empty */}
-          {teamCount === 0 && (
+          {teamCount === 0 && metaPokemon.length > 0 && (
             <div className="mb-4 p-3 rounded-xl text-center animate-slideUp" style={{
               background: 'linear-gradient(135deg, rgba(234, 179, 8, 0.08), rgba(245, 158, 11, 0.05))',
               border: '1px solid rgba(234, 179, 8, 0.15)',
