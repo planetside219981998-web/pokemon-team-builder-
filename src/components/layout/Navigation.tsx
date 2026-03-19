@@ -68,7 +68,7 @@ export function Navigation() {
       backdropFilter: 'blur(16px)',
       borderTop: '1px solid rgba(51, 65, 85, 0.5)',
     }}>
-      <div className="max-w-5xl mx-auto flex justify-around md:justify-start md:gap-1 md:px-4">
+      <div className="max-w-7xl mx-auto flex justify-around md:justify-start md:gap-1 md:px-4">
         {navItems.map((item) => (
           <NavLink
             key={item.to}

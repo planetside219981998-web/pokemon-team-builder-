@@ -17,7 +17,7 @@ function HeroSection() {
   const { t } = useTranslation();
 
   return (
-    <div className="text-center py-6 mb-2 animate-slideUp">
+    <div className="text-center py-5 mb-1 animate-slideUp">
       <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium mb-3" style={{
         background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(234, 179, 8, 0.1))',
         border: '1px solid rgba(239, 68, 68, 0.15)',
@@ -36,7 +36,7 @@ function HeroSection() {
       </p>
 
       {/* Quick start steps */}
-      <div className="flex items-center justify-center gap-4 mt-5 text-[11px] text-slate-500">
+      <div className="flex items-center justify-center gap-4 mt-4 text-[11px] text-slate-500">
         <div className="flex items-center gap-1.5">
           <span className="w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-bold" style={{
             background: 'rgba(239, 68, 68, 0.15)',
@@ -101,7 +101,6 @@ export function TeamBuilderPage() {
       }
     });
 
-    // Clean URL without reload
     window.history.replaceState({}, '', window.location.pathname);
   }, [isDataReady, addToTeam, setLeague]);
 
@@ -114,37 +113,50 @@ export function TeamBuilderPage() {
   const teamCount = team.filter((s) => s !== null).length;
 
   return (
-    <div className="space-y-5">
+    <div>
       {/* Hero when empty */}
       {teamCount === 0 && <HeroSection />}
 
+      {/* League selector - full width */}
       <LeagueSelector />
-      <TeamDisplay />
-      <TeamSaveLoad />
 
-      {/* Meta tier list - always visible */}
-      <MetaOverview startExpanded={true} />
+      {/* === Side-by-side: Meta (left) | Team Builder (right) === */}
+      <div className="flex flex-col lg:flex-row gap-5">
 
-      {/* Search bar */}
-      {isDataReady && (
-        <PokemonSearch
-          onSelect={handleSelect}
-          disabled={!hasEmptySlot}
-        />
-      )}
+        {/* LEFT COLUMN: Meta Tier List */}
+        <div className="lg:w-[380px] xl:w-[420px] lg:shrink-0 order-2 lg:order-1">
+          <div className="lg:sticky lg:top-[60px] lg:max-h-[calc(100vh-80px)] lg:overflow-y-auto scrollbar-hide">
+            <MetaOverview startExpanded={true} />
+          </div>
+        </div>
 
-      {/* Analysis sections */}
-      <TeamAnalysis />
-      <TypeCoverageGrid />
+        {/* RIGHT COLUMN: Team Builder */}
+        <div className="flex-1 min-w-0 space-y-5 order-1 lg:order-2">
+          <TeamDisplay />
+          <TeamSaveLoad />
 
-      {/* Recommendations */}
-      {isDataReady && (
-        <RecommendationList
-          recommendations={recommendations}
-          loading={loading}
-          error={error}
-        />
-      )}
+          {/* Search */}
+          {isDataReady && (
+            <PokemonSearch
+              onSelect={handleSelect}
+              disabled={!hasEmptySlot}
+            />
+          )}
+
+          {/* Analysis */}
+          <TeamAnalysis />
+          <TypeCoverageGrid />
+
+          {/* Recommendations */}
+          {isDataReady && (
+            <RecommendationList
+              recommendations={recommendations}
+              loading={loading}
+              error={error}
+            />
+          )}
+        </div>
+      </div>
     </div>
   );
 }
