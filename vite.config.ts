@@ -9,75 +9,11 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'icons/*.png', 'icons/*.svg'],
-      manifest: {
-        name: 'Pokemon GO Team Builder',
-        short_name: 'TeamBuilder',
-        description: 'Build optimal PvP and PvE teams for Pokemon GO. IV calculator, raid counters, type chart, head-to-head battles, and meta rankings.',
-        start_url: '/',
-        scope: '/',
-        id: '/',
-        display: 'standalone',
-        orientation: 'any',
-        background_color: '#0f172a',
-        theme_color: '#ef4444',
-        dir: 'ltr',
-        lang: 'en',
-        categories: ['games', 'utilities'],
-        launch_handler: {
-          client_mode: 'navigate-existing',
-        },
-        icons: [
-          { src: '/icons/icon-48.png', sizes: '48x48', type: 'image/png', purpose: 'any' },
-          { src: '/icons/icon-72.png', sizes: '72x72', type: 'image/png', purpose: 'any' },
-          { src: '/icons/icon-96.png', sizes: '96x96', type: 'image/png', purpose: 'any' },
-          { src: '/icons/icon-128.png', sizes: '128x128', type: 'image/png', purpose: 'any' },
-          { src: '/icons/icon-144.png', sizes: '144x144', type: 'image/png', purpose: 'any' },
-          { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
-          { src: '/icons/icon-256.png', sizes: '256x256', type: 'image/png', purpose: 'any' },
-          { src: '/icons/icon-384.png', sizes: '384x384', type: 'image/png', purpose: 'any' },
-          { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
-          { src: '/icons/maskable-192.png', sizes: '192x192', type: 'image/png', purpose: 'maskable' },
-          { src: '/icons/maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
-        ],
-        screenshots: [
-          {
-            src: '/screenshots/team-builder.png',
-            sizes: '390x844',
-            type: 'image/png',
-            form_factor: 'narrow',
-            label: 'Team Builder with meta rankings',
-          },
-          {
-            src: '/screenshots/type-chart.png',
-            sizes: '390x844',
-            type: 'image/png',
-            form_factor: 'narrow',
-            label: 'Interactive type effectiveness chart',
-          },
-        ],
-        shortcuts: [
-          {
-            name: 'IV Calculator',
-            short_name: 'IVs',
-            url: '/iv',
-            icons: [{ src: '/icons/icon-96.png', sizes: '96x96', type: 'image/png' }],
-          },
-          {
-            name: 'Raid Counters',
-            short_name: 'Raids',
-            url: '/raids',
-            icons: [{ src: '/icons/icon-96.png', sizes: '96x96', type: 'image/png' }],
-          },
-          {
-            name: 'Type Chart',
-            short_name: 'Types',
-            url: '/types',
-            icons: [{ src: '/icons/icon-96.png', sizes: '96x96', type: 'image/png' }],
-          },
-        ],
-      },
+      // Use external manifest.json from /public for full PWABuilder compatibility
+      manifest: false,
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+        navigateFallback: 'index.html',
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/raw\.githubusercontent\.com\/PokeAPI\/sprites\//,
