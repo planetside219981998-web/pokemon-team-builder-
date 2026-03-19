@@ -7,6 +7,7 @@ import { spriteUrl } from '@/utils/sprites';
 import { TypeBadge } from '@/components/shared/TypeBadge';
 import { TYPE_HEX } from '@/data/typeColors';
 import { getWeaknesses, getResistances } from '@/engine/typeChart';
+import { displayTypes } from '@/data/types';
 import type { Pokemon, RankedPokemon } from '@/data/types';
 
 interface MetaPokemon {
@@ -202,7 +203,7 @@ export function MetaOverview({ startExpanded = false }: Props) {
                             {getPokemonName(mp.pokemon.speciesId, mp.pokemon.speciesName, language)}
                           </div>
                           <div className="flex gap-1 mt-0.5">
-                            {mp.pokemon.types.map((type) => (
+                            {displayTypes(mp.pokemon.types).map((type) => (
                               <span
                                 key={type}
                                 className="text-[9px] px-1.5 py-px rounded-md text-white/90 font-medium"

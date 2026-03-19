@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppStore } from '@/store/appStore';
 import { db } from '@/data/db';
@@ -11,6 +11,8 @@ import { TypeBadge } from '@/components/shared/TypeBadge';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { spriteUrl } from '@/utils/sprites';
 import { TYPE_BG, TYPE_HEX } from '@/data/typeColors';
+import { fetchCurrentRaidBosses, type RaidBossByTier } from '@/data/raidBosses';
+import { displayTypes } from '@/data/types';
 import type { Pokemon, PokemonType } from '@/data/types';
 
 const WEATHER_OPTIONS = [
@@ -20,6 +22,15 @@ const WEATHER_OPTIONS = [
 const FRIEND_OPTIONS = [
   'none', 'good', 'great', 'ultra', 'best',
 ] as const;
+
+const TIER_COLORS: Record<string, { bg: string; border: string; text: string }> = {
+  '5': { bg: 'rgba(234, 179, 8, 0.08)', border: 'rgba(234, 179, 8, 0.2)', text: '#fbbf24' },
+  '6': { bg: 'rgba(168, 85, 247, 0.08)', border: 'rgba(168, 85, 247, 0.2)', text: '#a855f7' },
+  'mega': { bg: 'rgba(168, 85, 247, 0.08)', border: 'rgba(168, 85, 247, 0.2)', text: '#a855f7' },
+  'ultra_beast': { bg: 'rgba(59, 130, 246, 0.08)', border: 'rgba(59, 130, 246, 0.2)', text: '#60a5fa' },
+  '3': { bg: 'rgba(249, 115, 22, 0.08)', border: 'rgba(249, 115, 22, 0.2)', text: '#fb923c' },
+  '1': { bg: 'rgba(107, 114, 128, 0.08)', border: 'rgba(107, 114, 128, 0.2)', text: '#9ca3af' },
+};
 
 export function RaidsPage() {
   const { t } = useTranslation();
@@ -31,6 +42,19 @@ export function RaidsPage() {
   const [friendBoost, setFriendBoost] = useState<string>('none');
   const [counters, setCounters] = useState<RaidCounter[]>([]);
   const [loading, setLoading] = useState(false);
+  const [raidBosses, setRaidBosses] = useState<RaidBossByTier[]>([]);
+  const [loadingBosses, setLoadingBosses] = useState(false);
+
+  const isDataReady = syncStatus === 'ready';
+
+  // Fetch current raid bosses
+  useEffect(() => {
+    if (!isDataReady) return;
+    setLoadingBosses(true);
+    fetchCurrentRaidBosses()
+      .then(setRaidBosses)
+      .finally(() => setLoadingBosses(false));
+  }, [isDataReady]);
 
   const findCounters = useCallback(async (bossP: Pokemon, w: string, f: string) => {
     setLoading(true);
@@ -61,103 +85,189 @@ export function RaidsPage() {
     if (boss) findCounters(boss, weather, f);
   };
 
-  const isDataReady = syncStatus === 'ready';
   const maxDpsTdo = counters.length > 0 ? counters[0]!.dpsTimesTdo : 1;
-
-  // Boss type analysis
   const bossWeaknesses = boss ? getWeaknesses(boss.types as PokemonType[]) : [];
   const bossResistances = boss ? getResistances(boss.types as PokemonType[]) : [];
 
   return (
-    <div className="space-y-4">
-      <h1 className="text-xl font-bold">{t('raids.title')}</h1>
+    <div className="space-y-5">
+      <h1 className="text-xl font-bold text-white flex items-center gap-2">
+        <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{
+          background: 'linear-gradient(135deg, rgba(249, 115, 22, 0.2), rgba(239, 68, 68, 0.1))',
+          border: '1px solid rgba(249, 115, 22, 0.2)',
+        }}>
+          <svg className="w-4.5 h-4.5 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+        </div>
+        {t('raids.title')}
+      </h1>
 
-      {/* Boss selection */}
-      {isDataReady && (
-        <div>
-          <label className="text-sm font-medium text-slate-400 block mb-2">{t('raids.selectBoss')}</label>
-          {boss ? (
-            <div
-              className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl border p-4 shadow-lg"
-              style={{ borderColor: `${TYPE_HEX[boss.types[0] ?? 'normal'] ?? '#475569'}60` }}
-            >
-              <div className="flex items-center gap-4">
-                <img
-                  src={spriteUrl(boss.dex)}
-                  alt={boss.speciesName}
-                  className="w-20 h-20 drop-shadow-xl"
-                  loading="lazy"
-                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                />
-                <div className="flex-1">
-                  <h3 className="font-bold text-xl">
-                    {getPokemonName(boss.speciesId, boss.speciesName, language)}
-                  </h3>
-                  <div className="flex gap-1 mt-1">
-                    {boss.types.map((type) => (
-                      <TypeBadge key={type} type={type} size="md" />
-                    ))}
+      {/* Current Raid Bosses */}
+      {raidBosses.length > 0 && !boss && (
+        <div className="glass-card rounded-2xl overflow-hidden">
+          <div className="p-4 border-b border-slate-700/30">
+            <h2 className="font-bold text-white flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+              {t('raids.currentBosses', 'Current Raid Bosses')}
+            </h2>
+            <p className="text-xs text-slate-400 mt-1">{t('raids.currentBossesHint', 'Tap a boss to find the best counters')}</p>
+          </div>
+
+          <div className="p-4 space-y-4">
+            {raidBosses.map((tier) => {
+              const colors = TIER_COLORS[tier.tier] ?? TIER_COLORS['1']!;
+              return (
+                <div key={tier.tier}>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-xs font-bold px-2.5 py-1 rounded-lg" style={{
+                      background: colors.bg,
+                      border: `1px solid ${colors.border}`,
+                      color: colors.text,
+                    }}>
+                      {tier.tierLabel}
+                    </span>
+                    <div className="flex-1 h-px bg-gradient-to-r from-slate-600/50 to-transparent" />
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {tier.bosses.map(({ pokemon }) => {
+                      const typeColor = TYPE_HEX[pokemon.types[0] ?? 'normal'] ?? '#475569';
+                      return (
+                        <button
+                          key={`${pokemon.speciesId}-${tier.tier}`}
+                          onClick={() => handleSelectBoss(pokemon)}
+                          className="flex items-center gap-2 px-3 py-2 rounded-xl transition-all hover:scale-[1.02] cursor-pointer"
+                          style={{
+                            background: `linear-gradient(135deg, ${typeColor}10, rgba(15, 23, 42, 0.6))`,
+                            border: `1px solid ${typeColor}25`,
+                          }}
+                        >
+                          <img
+                            src={spriteUrl(pokemon.dex)}
+                            alt=""
+                            className="w-10 h-10 drop-shadow-md shrink-0"
+                            loading="lazy"
+                          />
+                          <div className="flex-1 min-w-0 text-left">
+                            <div className="text-xs font-semibold text-white truncate">
+                              {getPokemonName(pokemon.speciesId, pokemon.speciesName, language)}
+                            </div>
+                            <div className="flex gap-0.5 mt-0.5">
+                              {displayTypes(pokemon.types).map((type) => (
+                                <span
+                                  key={type}
+                                  className="text-[8px] px-1 py-px rounded text-white/80 font-medium"
+                                  style={{ backgroundColor: `${TYPE_HEX[type]}80` }}
+                                >
+                                  {t(`types.${type}`).slice(0, 3)}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
-                <button
-                  onClick={() => { setBoss(null); setCounters([]); }}
-                  className="px-3 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-sm transition-colors"
-                >
-                  {t('team.removeSlot')}
-                </button>
-              </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
-              {/* Boss Weaknesses & Resistances */}
-              <div className="mt-3 pt-3 border-t border-slate-700/50 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {bossWeaknesses.length > 0 && (
-                  <div>
-                    <span className="text-xs text-red-400 font-medium block mb-1">{t('raids.weakTo')}</span>
-                    <div className="flex flex-wrap gap-1">
-                      {bossWeaknesses.map((type) => (
-                        <TypeBadge key={type} type={type} size="sm" />
-                      ))}
-                    </div>
-                  </div>
-                )}
-                {bossResistances.length > 0 && (
-                  <div>
-                    <span className="text-xs text-green-400 font-medium block mb-1">{t('raids.resists')}</span>
-                    <div className="flex flex-wrap gap-1">
-                      {bossResistances.map((type) => (
-                        <TypeBadge key={type} type={type} size="sm" />
-                      ))}
-                    </div>
-                  </div>
-                )}
+      {loadingBosses && <LoadingSpinner message={t('raids.loadingBosses', 'Loading current raid bosses...')} />}
+
+      {/* Boss selection via search */}
+      {isDataReady && !boss && (
+        <div>
+          <label className="text-sm font-semibold text-slate-300 block mb-2">{t('raids.selectBoss')}</label>
+          <PokemonSearch onSelect={handleSelectBoss} />
+        </div>
+      )}
+
+      {/* Selected boss */}
+      {boss && (
+        <div
+          className="glass-card rounded-2xl p-4 animate-scaleIn"
+          style={{ borderColor: `${TYPE_HEX[boss.types[0] ?? 'normal'] ?? '#475569'}40` }}
+        >
+          <div className="flex items-center gap-4">
+            <div className="relative shrink-0">
+              <div className="absolute inset-0 rounded-full blur-xl opacity-30" style={{ backgroundColor: TYPE_HEX[boss.types[0] ?? 'normal'] }} />
+              <img
+                src={spriteUrl(boss.dex)}
+                alt={boss.speciesName}
+                className="w-20 h-20 drop-shadow-xl relative z-[1]"
+                loading="lazy"
+                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+              />
+            </div>
+            <div className="flex-1">
+              <h3 className="font-bold text-xl">
+                {getPokemonName(boss.speciesId, boss.speciesName, language)}
+              </h3>
+              <div className="flex gap-1 mt-1">
+                {displayTypes(boss.types).map((type) => (
+                  <TypeBadge key={type} type={type} size="md" />
+                ))}
               </div>
             </div>
-          ) : (
-            <PokemonSearch onSelect={handleSelectBoss} />
-          )}
+            <button
+              onClick={() => { setBoss(null); setCounters([]); }}
+              className="px-3 py-1.5 rounded-xl bg-slate-700/50 hover:bg-slate-600/50 text-sm transition-colors border border-slate-600/30"
+            >
+              {t('team.removeSlot')}
+            </button>
+          </div>
+
+          {/* Boss Weaknesses & Resistances */}
+          <div className="mt-3 pt-3 border-t border-slate-700/30 grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {bossWeaknesses.length > 0 && (
+              <div className="p-2.5 rounded-xl" style={{ background: 'rgba(153, 27, 27, 0.1)', border: '1px solid rgba(239, 68, 68, 0.15)' }}>
+                <span className="text-xs text-red-400 font-semibold block mb-1.5">{t('raids.weakTo')}</span>
+                <div className="flex flex-wrap gap-1">
+                  {bossWeaknesses.map((type) => (
+                    <TypeBadge key={type} type={type} size="sm" />
+                  ))}
+                </div>
+              </div>
+            )}
+            {bossResistances.length > 0 && (
+              <div className="p-2.5 rounded-xl" style={{ background: 'rgba(20, 83, 45, 0.1)', border: '1px solid rgba(34, 197, 94, 0.15)' }}>
+                <span className="text-xs text-green-400 font-semibold block mb-1.5">{t('raids.resistsLabel')}</span>
+                <div className="flex flex-wrap gap-1">
+                  {bossResistances.map((type) => (
+                    <TypeBadge key={type} type={type} size="sm" />
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       )}
 
       {/* Filters */}
       {boss && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl border border-slate-700/50 p-3 shadow-md">
-            <label className="text-xs font-medium text-slate-400 block mb-2">{t('raids.weatherBoost')}</label>
+          <div className="glass-card rounded-2xl p-3">
+            <label className="text-xs font-semibold text-slate-300 block mb-2">{t('raids.weatherBoost')}</label>
             <select
               value={weather}
               onChange={(e) => handleWeatherChange(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg bg-slate-700 border border-slate-600 text-white text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+              className="w-full px-3 py-2.5 rounded-xl bg-slate-800/80 border border-slate-600/40 text-white text-sm focus:outline-none focus:ring-2 focus:ring-red-500/50"
             >
               {WEATHER_OPTIONS.map((w) => (
                 <option key={w} value={w}>{t(`raids.${w}`)}</option>
               ))}
             </select>
           </div>
-          <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl border border-slate-700/50 p-3 shadow-md">
-            <label className="text-xs font-medium text-slate-400 block mb-2">{t('raids.friendBoost')}</label>
+          <div className="glass-card rounded-2xl p-3">
+            <label className="text-xs font-semibold text-slate-300 block mb-2">{t('raids.friendBoost')}</label>
             <select
               value={friendBoost}
               onChange={(e) => handleFriendChange(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg bg-slate-700 border border-slate-600 text-white text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+              className="w-full px-3 py-2.5 rounded-xl bg-slate-800/80 border border-slate-600/40 text-white text-sm focus:outline-none focus:ring-2 focus:ring-red-500/50"
             >
               {FRIEND_OPTIONS.map((f) => (
                 <option key={f} value={f}>{t(`raids.${f}`)}</option>
@@ -172,8 +282,17 @@ export function RaidsPage() {
 
       {!loading && counters.length > 0 && (
         <div>
-          <h2 className="text-sm font-medium text-slate-400 mb-2">
-            {t('raids.topCounters')} ({t('raids.results', { count: counters.length })})
+          <h2 className="text-sm font-bold text-white mb-3 flex items-center gap-2">
+            <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{
+              background: 'linear-gradient(135deg, rgba(249, 115, 22, 0.2), rgba(239, 68, 68, 0.1))',
+              border: '1px solid rgba(249, 115, 22, 0.2)',
+            }}>
+              <svg className="w-4 h-4 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+            </div>
+            {t('raids.topCounters')}
+            <span className="text-xs text-slate-400 font-normal">({t('raids.results', { count: counters.length })})</span>
           </h2>
           <div className="space-y-2">
             {counters.map((counter, idx) => {
@@ -181,8 +300,8 @@ export function RaidsPage() {
               return (
                 <div
                   key={`${counter.pokemon.speciesId}-${idx}`}
-                  className="bg-gradient-to-br from-slate-800/90 to-slate-900 rounded-xl border px-4 py-3 flex items-center gap-3 shadow-md animate-slideUp"
-                  style={{ borderColor: `${cTypeColor}30` }}
+                  className="glass-card rounded-2xl px-4 py-3 flex items-center gap-3 animate-slideUp"
+                  style={{ borderColor: `${cTypeColor}20` }}
                 >
                   <div className="relative shrink-0">
                     <img
@@ -193,7 +312,7 @@ export function RaidsPage() {
                       onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
                     />
                     <span
-                      className="absolute -top-1 -left-1 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white"
+                      className="absolute -top-1 -left-1 w-5 h-5 rounded-lg flex items-center justify-center text-[10px] font-bold text-white"
                       style={{ backgroundColor: cTypeColor }}
                     >
                       {idx + 1}
@@ -206,24 +325,31 @@ export function RaidsPage() {
                         {getPokemonName(counter.pokemon.speciesId, counter.pokemon.speciesName, language)}
                       </h3>
                       {counter.weatherBoosted && (
-                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-yellow-600/30 text-yellow-300 font-medium">WB</span>
+                        <span className="text-[10px] px-1.5 py-0.5 rounded-md font-medium" style={{
+                          background: 'rgba(234, 179, 8, 0.15)',
+                          color: '#fbbf24',
+                          border: '1px solid rgba(234, 179, 8, 0.2)',
+                        }}>WB</span>
                       )}
                     </div>
 
                     <div className="flex items-center gap-1.5 flex-wrap mb-1.5">
-                      <span className={`inline-block px-2 py-0.5 rounded border text-xs ${TYPE_BG[counter.fastMove.type] ?? ''}`}>
+                      <span className={`inline-block px-2 py-0.5 rounded-lg border text-xs ${TYPE_BG[counter.fastMove.type] ?? ''}`}>
                         {getMoveName(counter.fastMove.moveId, counter.fastMove.name, language)}
                       </span>
-                      <span className={`inline-block px-2 py-0.5 rounded border text-xs ${TYPE_BG[counter.chargedMove.type] ?? ''}`}>
+                      <span className={`inline-block px-2 py-0.5 rounded-lg border text-xs ${TYPE_BG[counter.chargedMove.type] ?? ''}`}>
                         {getMoveName(counter.chargedMove.moveId, counter.chargedMove.name, language)}
                       </span>
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <div className="flex-1 h-1.5 bg-slate-700 rounded-full overflow-hidden">
+                      <div className="flex-1 h-1.5 bg-slate-700/50 rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-gradient-to-r from-orange-500 to-red-500 rounded-full animate-barGrow"
-                          style={{ width: `${(counter.dpsTimesTdo / maxDpsTdo) * 100}%` }}
+                          className="h-full rounded-full animate-barGrow"
+                          style={{
+                            width: `${(counter.dpsTimesTdo / maxDpsTdo) * 100}%`,
+                            background: 'linear-gradient(90deg, #f97316, #ef4444)',
+                          }}
                         />
                       </div>
                     </div>
@@ -232,11 +358,11 @@ export function RaidsPage() {
                   <div className="shrink-0 text-right text-xs space-y-0.5">
                     <div>
                       <span className="text-slate-500">{t('raids.dps')}: </span>
-                      <span className="font-mono font-medium text-orange-400">{counter.dps.toFixed(1)}</span>
+                      <span className="font-mono font-semibold text-orange-400">{counter.dps.toFixed(1)}</span>
                     </div>
                     <div>
                       <span className="text-slate-500">{t('raids.tdo')}: </span>
-                      <span className="font-mono font-medium text-blue-400">{counter.tdo.toFixed(0)}</span>
+                      <span className="font-mono font-semibold text-blue-400">{counter.tdo.toFixed(0)}</span>
                     </div>
                   </div>
                 </div>
@@ -246,9 +372,12 @@ export function RaidsPage() {
         </div>
       )}
 
-      {!loading && !boss && (
+      {!loading && !boss && raidBosses.length === 0 && !loadingBosses && (
         <div className="text-center py-12">
-          <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-slate-800 to-slate-900 border-2 border-slate-700 flex items-center justify-center shadow-lg">
+          <div className="w-20 h-20 mx-auto mb-4 rounded-2xl flex items-center justify-center" style={{
+            background: 'linear-gradient(135deg, rgba(51, 65, 85, 0.3), rgba(30, 41, 59, 0.5))',
+            border: '2px dashed rgba(100, 116, 139, 0.3)',
+          }}>
             <svg className="w-10 h-10 text-slate-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
               <path d="M12 2L2 7l10 5 10-5-10-5z" />
               <path d="M2 17l10 5 10-5" />

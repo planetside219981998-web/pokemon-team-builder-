@@ -6,6 +6,7 @@ import { getPokemonName } from '@/i18n/pokemonNames';
 import { TypeBadge } from '@/components/shared/TypeBadge';
 import { spriteUrl } from '@/utils/sprites';
 import { TYPE_HEX } from '@/data/typeColors';
+import { displayTypes } from '@/data/types';
 import type { Pokemon } from '@/data/types';
 
 interface PokemonSearchProps {
@@ -83,7 +84,7 @@ export function PokemonSearch({ onSelect, disabled }: PokemonSearchProps) {
               {getPokemonName(selectedPokemon.speciesId, selectedPokemon.speciesName, language)}
             </span>
             <div className="flex gap-1 mt-1">
-              {selectedPokemon.types.map((type) => (
+              {displayTypes(selectedPokemon.types).map((type) => (
                 <TypeBadge key={type} type={type} size="sm" />
               ))}
             </div>
@@ -188,7 +189,7 @@ export function PokemonSearch({ onSelect, disabled }: PokemonSearchProps) {
                 </div>
               </div>
               <div className="flex gap-1 shrink-0">
-                {pokemon.types.map((type) => (
+                {displayTypes(pokemon.types).map((type) => (
                   <TypeBadge key={type} type={type} size="sm" />
                 ))}
               </div>

@@ -4,6 +4,7 @@ import { getPokemonName } from '@/i18n/pokemonNames';
 import { TypeBadge } from '@/components/shared/TypeBadge';
 import { spriteUrl } from '@/utils/sprites';
 import { TYPE_HEX } from '@/data/typeColors';
+import { displayTypes } from '@/data/types';
 
 export function TeamDisplay() {
   const { t } = useTranslation();
@@ -82,7 +83,7 @@ export function TeamDisplay() {
                     {getPokemonName(slot.pokemon.speciesId, slot.pokemon.speciesName, language)}
                   </div>
                   <div className="flex gap-1 justify-center mt-1.5">
-                    {slot.pokemon.types.map((type) => (
+                    {displayTypes(slot.pokemon.types).map((type) => (
                       <TypeBadge key={type} type={type} size="sm" />
                     ))}
                   </div>

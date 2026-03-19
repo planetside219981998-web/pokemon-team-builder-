@@ -118,6 +118,9 @@
     "estimator": "Estimator",
     "results": "{{count}} Counter gefunden",
     "noCounters": "Waehle einen Raid-Boss um Counter zu sehen",
+    "currentBosses": "Aktuelle Raid-Bosse",
+    "currentBossesHint": "Tippe einen Boss um die besten Counter zu finden",
+    "loadingBosses": "Lade aktuelle Raid-Bosse...",
     "weakTo": "Schwach gegen",
     "resistsLabel": "Resistent gegen"
   },

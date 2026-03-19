@@ -7,6 +7,7 @@ import { spriteUrl } from '@/utils/sprites';
 import { TypeBadge } from '@/components/shared/TypeBadge';
 import { getDefensiveProfile, getWeaknesses, getResistances } from '@/engine/typeChart';
 import { db } from '@/data/db';
+import { displayTypes } from '@/data/types';
 import type { Pokemon, Move } from '@/data/types';
 
 export function HeadToHeadPage() {
@@ -126,7 +127,7 @@ export function HeadToHeadPage() {
                 {getPokemonName(pokemon1.speciesId, pokemon1.speciesName, language)}
               </h3>
               <div className="flex gap-1 justify-center mt-1">
-                {pokemon1.types.map((type) => <TypeBadge key={type} type={type} size="sm" />)}
+                {displayTypes(pokemon1.types).map((type) => <TypeBadge key={type} type={type} size="sm" />)}
               </div>
             </div>
 
@@ -137,7 +138,7 @@ export function HeadToHeadPage() {
                 {getPokemonName(pokemon2.speciesId, pokemon2.speciesName, language)}
               </h3>
               <div className="flex gap-1 justify-center mt-1">
-                {pokemon2.types.map((type) => <TypeBadge key={type} type={type} size="sm" />)}
+                {displayTypes(pokemon2.types).map((type) => <TypeBadge key={type} type={type} size="sm" />)}
               </div>
             </div>
           </div>

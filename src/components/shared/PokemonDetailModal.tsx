@@ -7,6 +7,7 @@ import { TypeBadge } from './TypeBadge';
 import { TYPE_HEX } from '@/data/typeColors';
 import { getWeaknesses, getResistances, getDefensiveProfile } from '@/engine/typeChart';
 import { db } from '@/data/db';
+import { displayTypes } from '@/data/types';
 import type { Pokemon, Move } from '@/data/types';
 
 interface Props {
@@ -64,7 +65,7 @@ export function PokemonDetailModal({ pokemon, onClose }: Props) {
                 {getPokemonName(pokemon.speciesId, pokemon.speciesName, language)}
               </h2>
               <div className="flex gap-1.5 mt-1">
-                {pokemon.types.map((type) => <TypeBadge key={type} type={type} size="md" />)}
+                {displayTypes(pokemon.types).map((type) => <TypeBadge key={type} type={type} size="md" />)}
               </div>
               {pokemon.tags && pokemon.tags.length > 0 && (
                 <div className="flex gap-1 mt-2">

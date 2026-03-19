@@ -7,6 +7,7 @@ import { useAppStore } from '@/store/appStore';
 import { spriteUrl } from '@/utils/sprites';
 import { TypeBadge } from '@/components/shared/TypeBadge';
 import { TYPE_HEX } from '@/data/typeColors';
+import { displayTypes } from '@/data/types';
 import type { Pokemon } from '@/data/types';
 
 export function IVCalculatorPage() {
@@ -65,7 +66,7 @@ export function IVCalculatorPage() {
                   <img src={spriteUrl(p.dex)} alt="" className="w-8 h-8" loading="lazy" />
                   <span className="text-sm text-white">{getPokemonName(p.speciesId, p.speciesName, language)}</span>
                   <span className="ml-auto flex gap-1">
-                    {p.types.map((type) => <TypeBadge key={type} type={type} size="sm" />)}
+                    {displayTypes(p.types).map((type) => <TypeBadge key={type} type={type} size="sm" />)}
                   </span>
                 </button>
               ))}
@@ -102,7 +103,7 @@ export function IVCalculatorPage() {
                 {getPokemonName(selectedPokemon.speciesId, selectedPokemon.speciesName, language)}
               </h2>
               <div className="flex gap-1 mt-1">
-                {selectedPokemon.types.map((type) => <TypeBadge key={type} type={type} size="sm" />)}
+                {displayTypes(selectedPokemon.types).map((type) => <TypeBadge key={type} type={type} size="sm" />)}
               </div>
               <div className="text-xs text-slate-400 mt-1">
                 Base: {selectedPokemon.baseStats.atk}/{selectedPokemon.baseStats.def}/{selectedPokemon.baseStats.hp}

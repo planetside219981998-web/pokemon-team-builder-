@@ -118,6 +118,9 @@
     "estimator": "Estimator",
     "results": "{{count}} counters found",
     "noCounters": "Select a raid boss to see counters",
+    "currentBosses": "Current Raid Bosses",
+    "currentBossesHint": "Tap a boss to find the best counters",
+    "loadingBosses": "Loading current raid bosses...",
     "weakTo": "Weak to",
     "resistsLabel": "Resists"
   },

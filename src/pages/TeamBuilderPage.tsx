@@ -122,8 +122,8 @@ export function TeamBuilderPage() {
       <TeamDisplay />
       <TeamSaveLoad />
 
-      {/* Meta tier list - prominent when team is empty */}
-      <MetaOverview startExpanded={teamCount === 0} />
+      {/* Meta tier list - always visible */}
+      <MetaOverview startExpanded={true} />
 
       {/* Search bar */}
       {isDataReady && (

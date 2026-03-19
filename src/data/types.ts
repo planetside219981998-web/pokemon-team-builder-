@@ -11,6 +11,11 @@ export const ALL_TYPES: PokemonType[] = [
   'rock', 'ghost', 'dragon', 'dark', 'steel', 'fairy',
 ];
 
+/** Filter out 'none' type for display purposes */
+export function displayTypes(types: PokemonType[]): PokemonType[] {
+  return types.filter((t) => t !== 'none');
+}
+
 // From gamemaster/pokemon.json
 export interface Pokemon {
   dex: number;

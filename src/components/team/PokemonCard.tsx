@@ -8,6 +8,7 @@ import { TypeBadge } from '@/components/shared/TypeBadge';
 import { StatBar } from '@/components/shared/StatBar';
 import { spriteUrl } from '@/utils/sprites';
 import { TYPE_BG, TYPE_HEX } from '@/data/typeColors';
+import { displayTypes } from '@/data/types';
 import type { Recommendation, PokemonType } from '@/data/types';
 
 function MoveBadge({ moveId, locale, moveMap }: {
@@ -82,7 +83,7 @@ export function PokemonCard({ rec, rank, onAdd, canAdd }: PokemonCardProps) {
             <h3 className="font-bold text-lg truncate">{name}</h3>
           </div>
           <div className="flex gap-1 mb-2.5">
-            {rec.pokemon.types.map((type) => (
+            {displayTypes(rec.pokemon.types).map((type) => (
               <TypeBadge key={type} type={type} />
             ))}
           </div>
