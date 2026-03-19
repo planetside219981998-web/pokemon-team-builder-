@@ -30,13 +30,38 @@ export default {
           from: { opacity: '0', transform: 'translateY(16px)' },
           to: { opacity: '1', transform: 'translateY(0)' },
         },
+        slideDown: {
+          from: { opacity: '0', transform: 'translateY(-8px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
+        },
         barGrow: {
           from: { width: '0%' },
+        },
+        scaleIn: {
+          from: { opacity: '0', transform: 'scale(0.9)' },
+          to: { opacity: '1', transform: 'scale(1)' },
+        },
+        bounceIn: {
+          '0%': { opacity: '0', transform: 'scale(0.3)' },
+          '50%': { transform: 'scale(1.05)' },
+          '70%': { transform: 'scale(0.95)' },
+          '100%': { opacity: '1', transform: 'scale(1)' },
+        },
+        gradientShift: {
+          '0%, 100%': { backgroundPosition: '0% 50%' },
+          '50%': { backgroundPosition: '100% 50%' },
         },
       },
       animation: {
         slideUp: 'slideUp 0.4s ease-out',
+        slideDown: 'slideDown 0.3s ease-out',
         barGrow: 'barGrow 0.6s ease-out',
+        scaleIn: 'scaleIn 0.3s ease-out',
+        bounceIn: 'bounceIn 0.5s ease-out',
+        gradientShift: 'gradientShift 3s ease infinite',
+      },
+      backgroundSize: {
+        '200%': '200% 200%',
       },
     },
   },

@@ -1,7 +1,16 @@
 {
   "app": {
     "title": "Pokemon GO Team Builder",
+    "titleShort": "Team Builder",
     "subtitle": "Stelle dein optimales PvP- & PvE-Team zusammen"
+  },
+  "hero": {
+    "badge": "PvPoke Daten",
+    "title": "Baue dein Traum-Team",
+    "subtitle": "Waehle eine Liga, durchsuche die Meta-Tier-Liste und baue das perfekte Team. Unser Algorithmus analysiert Abdeckung, Synergie und Matchups.",
+    "step1": "Liga waehlen",
+    "step2": "Pokemon hinzufuegen",
+    "step3": "Empfehlungen"
   },
   "nav": {
     "teamBuilder": "Team",

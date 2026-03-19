@@ -17,6 +17,7 @@ export function TeamSaveLoad() {
 
   const [teamName, setTeamName] = useState('');
   const [showSaved, setShowSaved] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const filledSlots = team.filter((s) => s !== null);
 
@@ -52,8 +53,6 @@ export function TeamSaveLoad() {
     });
   };
 
-  const [copied, setCopied] = useState(false);
-
   return (
     <div className="space-y-3">
       {/* Save & Share row */}
@@ -63,20 +62,22 @@ export function TeamSaveLoad() {
           value={teamName}
           onChange={(e) => setTeamName(e.target.value)}
           placeholder={t('team.teamName')}
-          className="flex-1 bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+          className="flex-1 bg-slate-800/50 border border-slate-600/40 rounded-xl px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
           onKeyDown={(e) => e.key === 'Enter' && handleSave()}
         />
         <button
           onClick={handleSave}
           disabled={filledSlots.length === 0}
-          className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-500 text-white text-sm font-medium rounded-lg hover:from-blue-500 hover:to-blue-400 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+          className="px-4 py-2.5 text-white text-sm font-semibold rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all hover:scale-[1.02] shadow-md"
+          style={{ background: 'linear-gradient(135deg, #3b82f6, #2563eb)' }}
         >
           {t('team.save')}
         </button>
         <button
           onClick={handleShare}
           disabled={filledSlots.length === 0}
-          className="px-4 py-2 bg-gradient-to-r from-purple-600 to-purple-500 text-white text-sm font-medium rounded-lg hover:from-purple-500 hover:to-purple-400 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+          className="px-4 py-2.5 text-white text-sm font-semibold rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all hover:scale-[1.02] shadow-md"
+          style={{ background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)' }}
         >
           {copied ? t('team.copied') : t('team.share')}
         </button>
@@ -86,9 +87,9 @@ export function TeamSaveLoad() {
       {savedTeams.length > 0 && (
         <button
           onClick={() => setShowSaved(!showSaved)}
-          className="text-sm text-slate-400 hover:text-white transition-colors flex items-center gap-1"
+          className="text-sm text-slate-400 hover:text-white transition-colors flex items-center gap-1.5"
         >
-          <svg className={`w-4 h-4 transition-transform ${showSaved ? 'rotate-90' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg className={`w-4 h-4 transition-transform duration-200 ${showSaved ? 'rotate-90' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
           {t('team.savedTeams')} ({savedTeams.length})
@@ -103,7 +104,7 @@ export function TeamSaveLoad() {
             return (
               <div
                 key={saved.savedAt}
-                className="flex items-center gap-3 bg-gradient-to-r from-slate-800/80 to-slate-900/90 backdrop-blur-sm rounded-xl border border-slate-700 p-3 shadow-md"
+                className="flex items-center gap-3 glass-card rounded-xl p-3"
               >
                 {/* Sprites */}
                 <div className="flex -space-x-2">
@@ -121,16 +122,17 @@ export function TeamSaveLoad() {
 
                 {/* Name & meta */}
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium text-white truncate">{saved.name}</div>
+                  <div className="text-sm font-semibold text-white truncate">{saved.name}</div>
                   <div className="text-xs text-slate-400">
-                    {saved.league === 'all' ? 'Open' : saved.league} &middot; {saved.cp} CP
+                    {saved.league === 'all' ? 'Open' : saved.league} · {saved.cp} CP
                   </div>
                 </div>
 
                 {/* Actions */}
                 <button
                   onClick={() => handleLoad(saved)}
-                  className="px-3 py-1.5 bg-green-600/80 hover:bg-green-500 text-white text-xs font-medium rounded-lg transition-colors"
+                  className="px-3 py-1.5 text-white text-xs font-semibold rounded-lg transition-all hover:scale-105"
+                  style={{ background: 'linear-gradient(135deg, #16a34a, #15803d)' }}
                 >
                   {t('team.load')}
                 </button>

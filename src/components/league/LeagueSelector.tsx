@@ -43,7 +43,12 @@ export function LeagueSelector() {
 
   return (
     <div className="mb-4">
-      <h2 className="text-sm font-medium text-slate-400 mb-2">{t('league.select')}</h2>
+      <h2 className="text-sm font-semibold text-slate-300 mb-2.5 flex items-center gap-2">
+        <svg className="w-4 h-4 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+        </svg>
+        {t('league.select')}
+      </h2>
       <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
         {leagues.map((league, idx) => {
           const isSelected = selectedLeague === league.id && selectedCp === league.cp;
@@ -51,17 +56,24 @@ export function LeagueSelector() {
             <button
               key={`${league.id}-${league.cp}-${idx}`}
               onClick={() => setLeague(league.id, league.cp)}
-              className={`shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all ${
+              className={`shrink-0 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
                 isSelected
-                  ? 'bg-red-500 text-white shadow-lg shadow-red-500/25'
-                  : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                  ? 'text-white shadow-lg hover:scale-[1.02]'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
               }`}
+              style={isSelected ? {
+                background: 'linear-gradient(135deg, #ef4444, #dc2626)',
+                boxShadow: '0 4px 16px rgba(239, 68, 68, 0.3)',
+              } : {
+                background: 'rgba(51, 65, 85, 0.3)',
+                border: '1px solid rgba(71, 85, 105, 0.3)',
+              }}
             >
               <span>{league.name}</span>
               {league.isActive && (
-                <span className="ml-1.5 inline-block w-2 h-2 rounded-full bg-green-400" title={t('league.activeNow')} />
+                <span className="ml-1.5 inline-block w-2 h-2 rounded-full bg-green-400 shadow-sm shadow-green-400/50" title={t('league.activeNow')} />
               )}
-              <span className="ml-1 text-xs opacity-70">{league.cp < 10000 ? league.cp : '∞'}</span>
+              <span className="ml-1.5 text-xs opacity-60">{league.cp < 10000 ? league.cp : ''}</span>
             </button>
           );
         })}

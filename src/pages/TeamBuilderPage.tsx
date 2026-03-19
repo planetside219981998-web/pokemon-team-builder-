@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAppStore } from '@/store/appStore';
 import { useTeamBuilder } from '@/hooks/useTeamBuilder';
 import { LeagueSelector } from '@/components/league/LeagueSelector';
@@ -11,6 +12,62 @@ import { MetaOverview } from '@/components/results/MetaOverview';
 import { RecommendationList } from '@/components/results/RecommendationList';
 import { db } from '@/data/db';
 import type { Pokemon } from '@/data/types';
+
+function HeroSection() {
+  const { t } = useTranslation();
+
+  return (
+    <div className="text-center py-6 mb-2 animate-slideUp">
+      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium mb-3" style={{
+        background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(234, 179, 8, 0.1))',
+        border: '1px solid rgba(239, 68, 68, 0.15)',
+        color: '#fca5a5',
+      }}>
+        <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+        {t('hero.badge', 'PvPoke Data Powered')}
+      </div>
+      <h2 className="text-2xl sm:text-3xl font-extrabold mb-2">
+        <span className="bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
+          {t('hero.title', 'Build Your Dream Team')}
+        </span>
+      </h2>
+      <p className="text-sm text-slate-400 max-w-md mx-auto leading-relaxed">
+        {t('hero.subtitle', 'Choose a league, browse the meta tier list, and build the perfect team. Our algorithm analyzes coverage, synergy, and matchups.')}
+      </p>
+
+      {/* Quick start steps */}
+      <div className="flex items-center justify-center gap-4 mt-5 text-[11px] text-slate-500">
+        <div className="flex items-center gap-1.5">
+          <span className="w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-bold" style={{
+            background: 'rgba(239, 68, 68, 0.15)',
+            color: '#f87171',
+          }}>1</span>
+          {t('hero.step1', 'Pick League')}
+        </div>
+        <svg className="w-3 h-3 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        </svg>
+        <div className="flex items-center gap-1.5">
+          <span className="w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-bold" style={{
+            background: 'rgba(59, 130, 246, 0.15)',
+            color: '#60a5fa',
+          }}>2</span>
+          {t('hero.step2', 'Add Pokemon')}
+        </div>
+        <svg className="w-3 h-3 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        </svg>
+        <div className="flex items-center gap-1.5">
+          <span className="w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-bold" style={{
+            background: 'rgba(34, 197, 94, 0.15)',
+            color: '#4ade80',
+          }}>3</span>
+          {t('hero.step3', 'Get Picks')}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export function TeamBuilderPage() {
   const team = useAppStore((s) => s.team);
@@ -57,14 +114,18 @@ export function TeamBuilderPage() {
   const teamCount = team.filter((s) => s !== null).length;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
+      {/* Hero when empty */}
+      {teamCount === 0 && <HeroSection />}
+
       <LeagueSelector />
       <TeamDisplay />
       <TeamSaveLoad />
 
-      {/* Show meta overview prominently when team is empty */}
+      {/* Meta tier list - prominent when team is empty */}
       <MetaOverview startExpanded={teamCount === 0} />
 
+      {/* Search bar */}
       {isDataReady && (
         <PokemonSearch
           onSelect={handleSelect}
@@ -72,9 +133,11 @@ export function TeamBuilderPage() {
         />
       )}
 
+      {/* Analysis sections */}
       <TeamAnalysis />
       <TypeCoverageGrid />
 
+      {/* Recommendations */}
       {isDataReady && (
         <RecommendationList
           recommendations={recommendations}
